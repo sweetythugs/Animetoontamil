@@ -158,7 +158,7 @@
             color: white;
         }
         
-        /* Detail Page Layout Improvements */
+        /* Post Top Info Card */
         .post-top-info {
             display: flex;
             gap: 1.5rem;
@@ -168,6 +168,7 @@
             margin-bottom: 1.5rem;
             align-items: center;
             flex-wrap: wrap;
+            border: 1px solid #334155;
         }
         .post-top-info img {
             width: 140px;
@@ -189,7 +190,7 @@
         /* AdMob Banner Box Styling */
         .admob-banner {
             width: 100%;
-            max-width: 728px;
+            max-width: 900px;
             height: 90px;
             background: #111827;
             border: 1px dashed #334155;
@@ -225,16 +226,18 @@
         .episode-btn {
             display: block;
             width: 100%;
+            max-width: 900px;
+            margin: 10px auto;
             background: var(--card-bg);
             color: #38bdf8;
             padding: 12px 16px;
-            margin: 10px 0;
             border-radius: 6px;
             text-align: left;
             border: 1px solid #334155;
             font-weight: bold;
             cursor: pointer;
             transition: background 0.2s;
+            box-sizing: border-box;
         }
         .episode-btn:hover, .episode-btn.active-ep {
             background: var(--accent-color);
@@ -281,11 +284,11 @@
     </header>
 
     <div class="container">
-        <!-- DETAIL PAGE VIEW (POPUP / SEPARATE SCREEN STYLE) -->
+        <!-- DETAIL PAGE VIEW -->
         <div id="detail-page" class="detail-view">
             <button class="back-btn" onclick="goBack()">← Back to Home</button>
             
-            <!-- Post Information Header (Photo, Title, Category, Views) -->
+            <!-- 1. POST INFORMATION (Photo, Title, Views) -->
             <div class="post-top-info">
                 <img id="detail-img" src="" alt="">
                 <div class="post-top-text">
@@ -295,24 +298,25 @@
                 </div>
             </div>
 
-            <!-- ADMOB BANNER - ABOVE VIDEO -->
+            <!-- ADMOB BANNER - TOP OF VIDEO -->
             <div class="admob-banner">
                 <!-- உங்கள் AdMob Banner Ad கோடை இங்கே போடவும் -->
                 <span>[ AdMob Banner Ad - Top ]</span>
             </div>
 
-            <!-- In-App Iframe Video Player Section -->
+            <!-- 2. VIDEO PLAYER CONTAINER -->
             <div class="video-player-container">
                 <iframe id="main-video-player" src="" allow="autoplay"></iframe>
             </div>
 
-            <!-- ADMOB BANNER - BELOW VIDEO -->
+            <!-- ADMOB BANNER - BOTTOM OF VIDEO -->
             <div class="admob-banner">
                 <!-- உங்கள் AdMob Banner Ad கோடை இங்கே போடவும் -->
                 <span>[ AdMob Banner Ad - Bottom ]</span>
             </div>
 
-            <h2 class="section-title">Episodes List</h2>
+            <!-- 3. EPISODES LIST BUTTONS -->
+            <h2 class="section-title" style="max-width: 900px; margin: 1.5rem auto 1rem auto;">Episodes List</h2>
             <div id="detail-links-container"></div>
         </div>
 
@@ -400,8 +404,8 @@
                     </div>
 
                     <div class="form-group">
-                        <label>Video Links (Google Drive links - one per line)</label>
-                        <textarea id="post-links" rows="6" placeholder="Paste Google Drive share links here..."></textarea>
+                        <label>Video Links (Paste links separated by commas ',' or line-by-line)</label>
+                        <textarea id="post-links" rows="6" placeholder="https://drive.google.com/..., https://drive.google.com/..."></textarea>
                     </div>
 
                     <div style="display: flex; gap: 10px;">
@@ -557,8 +561,8 @@
 
                     let updatedLinks = postToEdit.links || "";
                     if (newLinksInput) {
-                        if (updatedLinks && !updatedLinks.endsWith("\n")) {
-                            updatedLinks += "\n";
+                        if (updatedLinks && !updatedLinks.trim().endsWith(",")) {
+                            updatedLinks += ", ";
                         }
                         updatedLinks += newLinksInput;
                     }
@@ -720,7 +724,7 @@
                 console.error("Error updating views:", err);
             }
 
-            // Set Top Information in Detail View
+            // Set Post Details at Top
             document.getElementById('detail-title').innerText = post.title;
             document.getElementById('detail-img').src = post.image;
             document.getElementById('detail-meta').innerText = `Category: ${post.category} • Genre: ${post.genre}`;
@@ -730,10 +734,11 @@
             const videoPlayer = document.getElementById('main-video-player');
 
             if (!post.links || post.links.trim() === "") {
-                container.innerHTML = "<p style='color: #94a3b8;'>No video links added yet.</p>";
+                container.innerHTML = "<p style='color: #94a3b8; text-align: center;'>No video links added yet.</p>";
                 videoPlayer.src = "";
             } else {
-                let linkArray = post.links.split('\n');
+                // கமா (,) அல்லது புது வரிகள் மூலம் லிங்க்குகளைப் பிரித்தல் (Comma & Newline support)
+                let linkArray = post.links.split(/[\n,]+/);
                 let validLinks = linkArray.map(l => l.trim()).filter(l => l.length > 0);
                 
                 let linksHtml = '';
@@ -790,7 +795,7 @@
 
         window.filterByAZ = function(letter, btnElement) {
             currentAZ = letter;
-            document.querySelectorAll('.az-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.az-bar .az-btn').forEach(btn => btn.classList.remove('active'));
             if(btnElement) {
                 btnElement.classList.add('active');
             }
