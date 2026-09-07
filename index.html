@@ -42,7 +42,6 @@
             max-width: 1400px;
             margin: auto;
         }
-        /* A-Z Bar */
         .az-bar {
             display: flex;
             gap: 6px;
@@ -135,7 +134,6 @@
             font-size: 0.8rem;
             flex: 1;
         }
-        /* Detail Page View */
         .detail-view {
             display: none;
         }
@@ -179,23 +177,43 @@
             color: #38bdf8;
             font-size: 1.8rem;
         }
-        .episode-link {
+        /* In-App iframe Video Player Container */
+        .video-player-container {
+            position: relative;
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto 2rem auto;
+            padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+            height: 0;
+            background: #000;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #334155;
+        }
+        .video-player-container iframe {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            border: none;
+        }
+        .episode-btn {
             display: block;
+            width: 100%;
             background: var(--card-bg);
             color: #38bdf8;
             padding: 12px 16px;
             margin: 10px 0;
             border-radius: 6px;
-            text-decoration: none;
+            text-align: left;
             border: 1px solid #334155;
             font-weight: bold;
+            cursor: pointer;
             transition: background 0.2s;
         }
-        .episode-link:hover {
+        .episode-btn:hover, .episode-btn.active-ep {
             background: var(--accent-color);
             color: white;
         }
-        /* Bottom Navigation Bar */
         .bottom-nav {
             position: fixed;
             bottom: 0; left: 0; width: 100%;
@@ -240,6 +258,12 @@
         <!-- DETAIL PAGE VIEW -->
         <div id="detail-page" class="detail-view">
             <button class="back-btn" onclick="goBack()">← Back</button>
+            
+            <!-- In-App Embed Video Player Section -->
+            <div class="video-player-container">
+                <iframe id="main-video-player" src="" allow="autoplay"></iframe>
+            </div>
+
             <div class="detail-header">
                 <img id="detail-img" src="" alt="">
                 <div class="detail-info">
@@ -248,7 +272,8 @@
                     <p id="detail-views" style="color: #38bdf8; font-weight: bold; font-size: 0.95rem;"></p>
                 </div>
             </div>
-            <h2 class="section-title">Episodes List</h2>
+            
+            <h2 class="section-title">Episodes List (Play Inside App)</h2>
             <div id="detail-links-container"></div>
         </div>
 
@@ -336,8 +361,8 @@
                     </div>
 
                     <div class="form-group">
-                        <label>Video Links (New links will be added along with existing links)</label>
-                        <textarea id="post-links" rows="6" placeholder="Paste new episodes here..."></textarea>
+                        <label>Google Drive Links (Paste sharing links, one per line)</label>
+                        <textarea id="post-links" rows="6" placeholder="https://drive.google.com/file/d/.../view?usp=sharing"></textarea>
                     </div>
 
                     <div style="display: flex; gap: 10px;">
@@ -406,7 +431,6 @@
         const auth = getAuth(app);
         const provider = new GoogleAuthProvider();
 
-        // ** உங்களது அட்மின் ஜிமெயில் முகவரியை இங்கே மாற்றிக் கொள்ளவும் **
         const ADMIN_EMAIL = "arulmani0000@gmail.com"; 
 
         let allPosts = [];
@@ -492,7 +516,6 @@
                         return;
                     }
 
-                    // புதிய லிங்குகளை ஏற்கனவே உள்ள லிங்குகளுடன் சேர்த்து இணைத்தல் (Append / Continue episodes)
                     let updatedLinks = postToEdit.links || "";
                     if (newLinksInput) {
                         if (updatedLinks && !updatedLinks.endsWith("\n")) {
@@ -538,7 +561,7 @@
             document.getElementById('post-category').value = post.category || 'Series';
             document.getElementById('post-genre').value = post.genre || 'Anime';
             document.getElementById('post-image').value = post.image;
-            document.getElementById('post-links').value = ""; // புதிய எபிசோடுகளை மட்டும் சேர்க்க காலியாக வைக்கிறோம்
+            document.getElementById('post-links').value = ""; 
 
             document.getElementById('form-heading').innerText = "Edit / Add Episodes";
             document.getElementById('submit-btn').innerText = "Update & Add Episodes";
@@ -597,7 +620,6 @@
             let html = '';
             posts.forEach(post => {
                 let canEdit = currentUser && (isAdmin || post.userEmail === currentUser.email);
-                // டெலீட் செய்யும் அதிகாரம் அட்மினுக்கு மட்டும் (Admin Only Delete)
                 let canDelete = currentUser && isAdmin;
                 let viewCount = post.views || 0;
 
@@ -623,6 +645,28 @@
             grid.innerHTML = html;
         }
 
+        // கூகுள் டிரைவ் ஷேரிங் லிங்க்கை ஆப்பிற்குள் பிளே ஆகும் Embed லிங்காக மாற்றுதல்
+        window.getEmbedUrl = function(url) {
+            if (!url) return "";
+            let trimmed = url.trim();
+            let fileId = "";
+            if (trimmed.includes("drive.google.com")) {
+                let fileIdMatch = trimmed.match(/\/d\/([a-zA-Z0-9_-]+)/);
+                if (fileIdMatch && fileIdMatch[1]) {
+                    fileId = fileIdMatch[1];
+                } else {
+                    let idMatch = trimmed.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+                    if (idMatch && idMatch[1]) {
+                        fileId = idMatch[1];
+                    }
+                }
+            }
+            if (fileId) {
+                return `https://drive.google.com/file/d/${fileId}/preview`;
+            }
+            return trimmed;
+        }
+
         window.openDetailPage = async function(id) {
             const post = allPosts.find(p => p.id === id);
             if (!post) return;
@@ -643,18 +687,27 @@
             document.getElementById('detail-views').innerText = `👁️ Total Views: ${post.views || 0}`;
 
             const container = document.getElementById('detail-links-container');
+            const videoPlayer = document.getElementById('main-video-player');
+
             if (!post.links || post.links.trim() === "") {
                 container.innerHTML = "<p style='color: #94a3b8;'>No video links added yet.</p>";
+                videoPlayer.src = "";
             } else {
                 let linkArray = post.links.split('\n');
+                let validLinks = linkArray.map(l => l.trim()).filter(l => l.length > 0);
+                
                 let linksHtml = '';
-                linkArray.forEach((link, index) => {
-                    let trimmedLink = link.trim();
-                    if(trimmedLink) {
-                        linksHtml += `<a href="${trimmedLink}" target="_blank" class="episode-link">Episode ${index + 1} - Watch / Download</a>`;
-                    }
+                validLinks.forEach((link, index) => {
+                    let embedUrl = getEmbedUrl(link);
+                    linksHtml += `<button class="episode-btn" onclick="playEpisode('${embedUrl}', this)">▶ Episode ${index + 1}</button>`;
                 });
                 container.innerHTML = linksHtml;
+
+                // முதல் எபிசோடை ஆட்டோமேட்டிக்காக பிளேயரில் லோட் செய்தல்
+                if (validLinks.length > 0) {
+                    let firstEmbedUrl = getEmbedUrl(validLinks[0]);
+                    videoPlayer.src = firstEmbedUrl;
+                }
             }
 
             document.getElementById('main-app-content').style.display = 'none';
@@ -662,9 +715,19 @@
             window.scrollTo(0, 0);
         }
 
+        window.playEpisode = function(url, btnElement) {
+            const videoPlayer = document.getElementById('main-video-player');
+            videoPlayer.src = url;
+
+            document.querySelectorAll('.episode-btn').forEach(b => b.classList.remove('active-ep'));
+            if(btnElement) btnElement.classList.add('active-ep');
+        }
+
         window.goBack = function() {
             document.getElementById('detail-page').classList.remove('active');
             document.getElementById('main-app-content').style.display = 'block';
+            const videoPlayer = document.getElementById('main-video-player');
+            videoPlayer.src = "";
             fetchPosts();
         }
 
