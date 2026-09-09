@@ -202,24 +202,29 @@
             text-align: center;
         }
 
-        .video-player-container {
-            position: relative;
-            width: 100%;
-            max-width: 700px;
-            margin: 0 auto;
-            padding-bottom: 90%; 
-            height: 0;
-            background: #000;
-            border-radius: 7px;
-            overflow: hidden;
-            border: 1px solid #334155;
-        }
-        .video-player-container iframe {
-            position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            border: none;
-        }
+      .video-player-container {
+    position: relative;
+    width: 100vw; /* மொபைல் ஸ்கிரீனின் முழு அகலம் (Viewport Width) */
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+    /* பாக்ஸின் உயரத்தை உங்கள் விருப்பப்படி 4:3 விகிதத்திற்கு ஏற்ப செட் செய்து கொள்ளலாம் */
+    aspect-ratio: 4 / 3; 
+    background: #000;
+    border-radius: 0px; /* ஃபுல் ஸ்கிரீன் போல இருக்க வேண்டுமென்றால் கார்னர் வளைவை நீக்கலாம் */
+    overflow: hidden;
+    border: none;
+}
+
+.video-player-container iframe {
+    position: absolute;
+    top: 0; 
+    left: 0;
+    width: 100%; 
+    height: 100%;
+    border: none;
+}
         .episode-btn {
             display: block;
             width: 100%;
