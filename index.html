@@ -202,28 +202,28 @@
             text-align: center;
         }
 
-/* உங்கள் ஆப்பில் உள்ள அனைத்து கூகுள் டிரைவ் வீடியோக்களுக்கும் இது பொதுவானது */
 .video-player-container {
-    position: relative;
-    width: 100%;
-    max-width: 100%;
-    margin: 10px auto;
-    /* மொபைல் மற்றும் லேப்டாப் இரண்டிற்கும் ஏற்ற சரியான விகிதம் */
-    aspect-ratio: 16 / 9; 
-    background: #000;
-    border-radius: 8px;
-    overflow: hidden;
-    border: 1px solid #334155;
-}
-
-.video-player-container iframe {
-    position: absolute;
-    top: 0; 
-    left: 0;
-    width: 100%; 
-    height: 100%;
-    border: none;
-}
+            position: relative;
+            width: 100%;
+            max-width: 700px;
+            margin: 0 auto;
+            /* இது லேப்டாப் மற்றும் மொபைல் இரண்டிலும் ஒரே சீரான விகிதத்தைத் தரும் */
+            aspect-ratio: 16 / 9; 
+            background: #000;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #334155;
+        }
+        
+        .video-player-container iframe {
+            position: absolute;
+            top: 0; 
+            left: 0;
+            width: 100%; 
+            height: 100%;
+            border: none;
+            transform: scale(1);
+        }
         
         .episode-btn {
             display: block;
