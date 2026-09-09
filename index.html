@@ -202,12 +202,12 @@
             text-align: center;
         }
 
-      .video-player-container {
+    .video-player-container {
             position: relative;
             width: 100%;
-            max-width: 700px; /* பாக்ஸின் அகலத்தை குறிப்பிட்ட அளவுக்குள் வைத்துக் கொள்ள */
+            max-width: 700px;
             margin: 0 auto;
-            aspect-ratio: 25 / 18; /* பழைய வீடியோக்களுக்கான ஒரிஜினல் 4:3 பாக்ஸ் ரேஷியோ */
+            aspect-ratio: 25 / 18; /* நீங்கள் வைத்திருக்கும் அதே விகிதம் */
             background: #000;
             border-radius: 8px;
             overflow: hidden;
@@ -221,9 +221,9 @@
             width: 100%; 
             height: 100%;
             border: none;
-            object-fit: contain; /* வீடியோ அதன் ஒரிஜினல் சைஸ் மாறாமல் பாக்ஸுக்குள் கரெக்டாக உட்காரும் */
-        }
-        .episode-btn {
+            /* இது லேப்டாப் மற்றும் மொபைல் இரண்டிலும் வீடியோவை அந்த பாக்ஸுக்குள் நூற்றுக்கு நூறு சதவீதம் சரியாகப் பொருத்தும் */
+            object-fit: cover; 
+        }        .episode-btn {
             display: block;
             width: 100%;
             max-width: 900px;
