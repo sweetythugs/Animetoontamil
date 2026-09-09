@@ -202,16 +202,16 @@
             text-align: center;
         }
 
-    .video-player-container {
+  .video-player-container {
     position: relative;
-    width: 100%;
-    max-width: 100%;
+    width: 94%; /* லெஃப்ட் மற்றும் ரைட் சைடில் சின்ன கேப் இருக்க இது உதவும் */
+    max-width: 800px;
     margin: 0 auto;
-    aspect-ratio: 4 / 3; /* 4:3 கிளாசிக் கார்ட்டூன் அளவுக்கு கரெக்ட்டாக இருக்க இதுதான் முக்கியம் */
+    aspect-ratio: 4 / 3; /* கிளாசிக் 4:3 கார்ட்டூன் வீடியோக்களுக்கு */
     background: #000;
-    border-radius: 0px; 
+    border-radius: 8px; /* மூலைகளில் லேசான வளைவு */
     overflow: hidden;
-    border: none;
+    border: 1px solid #64748b; /* 2mm பென்சில் கோடு போல மெலிதான பார்டர் */
 }
 
 .video-player-container iframe {
