@@ -202,17 +202,18 @@
             text-align: center;
         }
 
-       .video-player-container {
+      .video-player-container {
             position: relative;
             width: 100%;
-            max-width: 900px;
+            max-width: 700px; /* பாக்ஸின் அகலத்தை குறிப்பிட்ட அளவுக்குள் வைத்துக் கொள்ள */
             margin: 0 auto;
-            height: 480px; /* வீடியோவின் உயரத்தை நீங்களே பெரிதாக மாற்றிக்கொள்ளலாம் */
+            aspect-ratio: 4 / 3; /* பழைய வீடியோக்களுக்கான ஒரிஜினல் 4:3 பாக்ஸ் ரேஷியோ */
             background: #000;
             border-radius: 8px;
             overflow: hidden;
             border: 1px solid #334155;
         }
+        
         .video-player-container iframe {
             position: absolute;
             top: 0; 
@@ -220,7 +221,7 @@
             width: 100%; 
             height: 100%;
             border: none;
-            object-fit: cover;
+            object-fit: contain; /* வீடியோ அதன் ஒரிஜினல் சைஸ் மாறாமல் பாக்ஸுக்குள் கரெக்டாக உட்காரும் */
         }
         .episode-btn {
             display: block;
