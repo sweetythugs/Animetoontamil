@@ -204,45 +204,82 @@
             text-align: center;
         }
 
-        /* SAME-PAGE DRIVE PLAYER: no browser fullscreen, no forced 16:9 crop */
-.video-player-container {
-    position: relative;
-    width: 100%;
-    max-width: 900px;
-    margin: 0 auto;
-    background: #000;
-    border-radius: 8px;
-    overflow: hidden;
-    border: 1px solid #334155;
-}
-
-.video-player-container.ratio-4-3 {
-    aspect-ratio: 4 / 3;
-}
-
-.video-player-container.ratio-16-9 {
-    aspect-ratio: 16 / 9;
-}
-
-.video-player-container iframe {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    border: 0;
-    display: block;
-}
-
-@media (max-width: 600px) {
-    .video-player-container {
-        width: 100%;
-        max-width: 100%;
-        border-radius: 0;
-        border-left: 0;
-        border-right: 0;
-    }
-}
-</style>
+        /* Video Player - supports both Classic 4:3 and Widescreen 16:9 */
+        .video-player-container {
+            position: relative;
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto;
+            background: #000;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #334155;
+            aspect-ratio: 16 / 9;
+        }
+        .video-player-container.ratio-4-3 {
+            aspect-ratio: 4 / 3;
+        }
+        .video-player-container.ratio-16-9 {
+            aspect-ratio: 16 / 9;
+        }
+        .video-player-container iframe {
+            display: block;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        .episode-btn {
+            display: block;
+            width: 100%;
+            max-width: 900px;
+            margin: 10px auto;
+            background: var(--card-bg);
+            color: #38bdf8;
+            padding: 12px 16px;
+            border-radius: 6px;
+            text-align: left;
+            border: 1px solid #334155;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+            box-sizing: border-box;
+        }
+        .episode-btn:hover, .episode-btn.active-ep {
+            background: var(--accent-color);
+            color: white;
+        }
+        .bottom-nav {
+            position: fixed;
+            bottom: 0; left: 0; width: 100%;
+            background: #0b0f19;
+            border-top: 1px solid #1e293b;
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            z-index: 1000;
+        }
+        .nav-item {
+            background: none; border: none;
+            color: #94a3b8; cursor: pointer;
+            display: flex; flex-direction: column;
+            align-items: center; font-size: 0.75rem; font-weight: bold;
+        }
+        .nav-item.active, .nav-item:hover { color: #38bdf8; }
+        .section { display: none; }
+        .section.active { display: block; }
+        .search-box input {
+            width: 100%; padding: 12px;
+            background: var(--card-bg); border: 1px solid #334155;
+            color: white; border-radius: 6px; font-size: 1rem;
+        }
+        .form-group { margin-bottom: 1rem; }
+        .form-group label { display: block; margin-bottom: 5px; }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%; padding: 10px;
+            background: var(--card-bg); border: 1px solid #334155;
+            color: white; border-radius: 5px; box-sizing: border-box;
+        }
+    </style>
 </head>
 <body>
 
@@ -273,17 +310,11 @@
             </div>
 
             <!-- 2. VIDEO PLAYER CONTAINER -->
-            <div class="video-player-wrap">
-                <div id="video-player-container" class="video-player-container ratio-16-9">
-                    <iframe id="main-video-player"
-                            src=""
-                            allow="autoplay; fullscreen; picture-in-picture"
-                            allowfullscreen
-                            webkitallowfullscreen
-                            mozallowfullscreen></iframe>
-                </div>
+            <div class="video-player-container">
+                <iframe id="main-video-player" src="" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen webkitallowfullscreen mozallowfullscreen></iframe>
+            </div>
 
-                <!-- ADMOB BANNER - BOTTOM OF VIDEO -->
+            <!-- ADMOB BANNER - BOTTOM OF VIDEO -->
             <div class="admob-banner">
                 <!-- உங்கள் AdMob Banner Ad கோடை இங்கே போடவும் -->
                 <span>[ AdMob Banner Ad - Bottom ]</span>
@@ -295,33 +326,6 @@
         </div>
 
         <!-- MAIN APP SECTIONS -->
-        <!-- Episode player stays inside this page -->
-        <div id="episode-player-page" class="detail-view">
-            <button class="back-btn" onclick="closeEpisodePlayer()">← Back to Anime</button>
-            <div class="episode-player-title" id="episode-player-title">Episode Player</div>
-
-            <div class="admob-banner">
-                <!-- PUT YOUR WEBSITE AD CODE HERE - TOP -->
-                <span>[ Advertisement - Top ]</span>
-            </div>
-
-            <div id="episode-player-container" class="video-player-container ratio-16-9">
-                <iframe id="episode-video-player"
-                        src=""
-                        allow="autoplay; fullscreen; picture-in-picture"
-                        allowfullscreen
-                        webkitallowfullscreen
-                        mozallowfullscreen></iframe>
-            </div>
-            <div class="admob-banner">
-                <!-- PUT YOUR WEBSITE AD CODE HERE - BOTTOM -->
-                <span>[ Advertisement - Bottom ]</span>
-            </div>
-
-            <h2 class="section-title" style="max-width:900px;margin:1.5rem auto 1rem auto;">Episode List</h2>
-            <div id="episode-player-links"></div>
-        </div>
-
         <div id="main-app-content">
             <!-- HOME SECTION -->
             <div id="home" class="section active">
@@ -410,7 +414,7 @@
                     </div>
 
                     <div class="form-group">
-                        <label>Video Format</label>
+                        <label>Video Screen Ratio</label>
                         <select id="post-video-ratio">
                             <option value="16:9">Widescreen (16:9)</option>
                             <option value="4:3">Classic (4:3)</option>
@@ -578,14 +582,12 @@
                     }
 
                     await updateDoc(doc(db, "posts", postId), {
-                        title, category, genre, image, links: updatedLinks,
-                        videoRatio: videoRatio
+                        title, category, genre, image, links: updatedLinks, videoRatio
                     });
                     alert("Post Updated & New Episodes Added Successfully!");
                 } else {
                     await addDoc(collection(db, "posts"), {
-                        title, category, genre, image, links: newLinksInput,
-                        videoRatio: videoRatio,
+                        title, category, genre, image, links: newLinksInput, videoRatio,
                         views: 0,
                         userEmail: currentUser.email,
                         createdAt: new Date()
@@ -747,13 +749,9 @@
 
             const container = document.getElementById('detail-links-container');
             const videoPlayer = document.getElementById('main-video-player');
-            const playerContainer = document.getElementById('video-player-container');
+            const playerContainer = document.querySelector('.video-player-container');
 
-            // Use the saved source ratio. Never force a 16:9 box around a 4:3 video.
-            playerContainer.classList.remove('ratio-4-3', 'ratio-16-9');
-            playerContainer.classList.add(post.videoRatio === '4:3' ? 'ratio-4-3' : 'ratio-16-9');
-            const playerContainer = document.getElementById('video-player-container');
-
+            // Existing posts without videoRatio remain 16:9; edited Classic posts use 4:3.
             const ratio = post.videoRatio === '4:3' ? '4:3' : '16:9';
             playerContainer.classList.remove('ratio-4-3', 'ratio-16-9');
             playerContainer.classList.add(ratio === '4:3' ? 'ratio-4-3' : 'ratio-16-9');
@@ -787,38 +785,25 @@
 
         window.playEpisode = function(url, btnElement) {
             const videoPlayer = document.getElementById('main-video-player');
-            const playerContainer = document.getElementById('video-player-container');
+            const playerContainer = document.querySelector('.video-player-container');
             const post = allPosts.find(p => p.id === window.currentDetailPostId);
 
-            // Keep the player on this same page. No separate window/page and no custom fullscreen.
-            const ratio = (post && post.videoRatio === '4:3') ? '4:3' : '16:9';
+            const ratio = post && post.videoRatio === '4:3' ? '4:3' : '16:9';
             playerContainer.classList.remove('ratio-4-3', 'ratio-16-9');
             playerContainer.classList.add(ratio === '4:3' ? 'ratio-4-3' : 'ratio-16-9');
 
             videoPlayer.src = convertToEmbedUrl(url);
 
             document.querySelectorAll('.episode-btn').forEach(b => b.classList.remove('active-ep'));
-            if (btnElement) btnElement.classList.add('active-ep');
-
-            // Bring the same-page player into view.
-            playerContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
-
-        window.closeEpisodePlayer = function() {
-            document.getElementById('episode-video-player').src = '';
-            document.getElementById('episode-player-page').classList.remove('active');
-            document.getElementById('detail-page').classList.add('active');
-            document.getElementById('main-app-content').style.display = 'none';
-            window.scrollTo(0, 0);
+            if(btnElement) btnElement.classList.add('active-ep');
         }
 
         window.goBack = function() {
             document.getElementById('detail-page').classList.remove('active');
-            document.getElementById('episode-player-page').classList.remove('active');
-            document.getElementById('episode-video-player').src = '';
             document.getElementById('main-app-content').style.display = 'block';
             const videoPlayer = document.getElementById('main-video-player');
             videoPlayer.src = "";
+            window.currentDetailPostId = null;
             fetchPosts();
         }
 
@@ -856,8 +841,6 @@
 
         window.showSection = function(sectionId, btnElement) {
             document.getElementById('detail-page').classList.remove('active');
-            document.getElementById('episode-player-page').classList.remove('active');
-            document.getElementById('episode-video-player').src = '';
             document.getElementById('main-app-content').style.display = 'block';
 
             document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
