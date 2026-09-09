@@ -202,17 +202,14 @@
             text-align: center;
         }
 
-      .video-player-container {
+    .video-player-container {
     position: relative;
-    width: 100vw; /* மொபைல் ஸ்கிரீனின் முழு அகலம் (Viewport Width) */
-    left: 50%;
-    right: 50%;
-    margin-left: -50vw;
-    margin-right: -50vw;
-    /* பாக்ஸின் உயரத்தை உங்கள் விருப்பப்படி 4:3 விகிதத்திற்கு ஏற்ப செட் செய்து கொள்ளலாம் */
-    aspect-ratio: 4 / 3; 
+    width: 100%;
+    max-width: 100%;
+    margin: 0 auto;
+    aspect-ratio: 4 / 3; /* 4:3 கிளாசிக் கார்ட்டூன் அளவுக்கு கரெக்ட்டாக இருக்க இதுதான் முக்கியம் */
     background: #000;
-    border-radius: 8px; /* ஃபுல் ஸ்கிரீன் போல இருக்க வேண்டுமென்றால் கார்னர் வளைவை நீக்கலாம் */
+    border-radius: 0px; 
     overflow: hidden;
     border: none;
 }
@@ -225,6 +222,7 @@
     height: 100%;
     border: none;
 }
+        
         .episode-btn {
             display: block;
             width: 100%;
