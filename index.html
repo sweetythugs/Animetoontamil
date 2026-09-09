@@ -158,7 +158,6 @@
             color: white;
         }
         
-        /* Post Top Info Card */
         .post-top-info {
             display: flex;
             gap: 1.5rem;
@@ -187,7 +186,6 @@
             font-size: 0.95rem;
         }
 
-        /* AdMob Banner Box Styling */
         .admob-banner {
             width: 100%;
             max-width: 900px;
@@ -204,26 +202,24 @@
             text-align: center;
         }
 
-    .video-player-container {
+        .video-player-container {
             position: relative;
             width: 100%;
             max-width: 900px;
             margin: 0 auto;
-            aspect-ratio: 4 / 3; /* கிளாசிக் மற்றும் பழைய கார்ட்டூன் வீடியோக்களுக்கு இது மிகச் சரியாகப் பொருந்தும் */
+            padding-bottom: 56.25%; 
+            height: 0;
             background: #000;
             border-radius: 8px;
             overflow: hidden;
             border: 1px solid #334155;
         }
         .video-player-container iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
             position: absolute;
-            top: 0;
-            left: 0;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            border: none;
         }
-        
         .episode-btn {
             display: block;
             width: 100%;
@@ -289,7 +285,6 @@
         <div id="detail-page" class="detail-view">
             <button class="back-btn" onclick="goBack()">← Back to Home</button>
             
-            <!-- 1. POST INFORMATION (Photo, Title, Views) -->
             <div class="post-top-info">
                 <img id="detail-img" src="" alt="">
                 <div class="post-top-text">
@@ -299,31 +294,24 @@
                 </div>
             </div>
 
-            <!-- ADMOB BANNER - TOP OF VIDEO -->
             <div class="admob-banner">
-                <!-- உங்கள் AdMob Banner Ad கோடை இங்கே போடவும் -->
                 <span>[ AdMob Banner Ad - Top ]</span>
             </div>
 
-            <!-- 2. VIDEO PLAYER CONTAINER -->
             <div class="video-player-container">
                 <iframe id="main-video-player" src="" allow="autoplay"></iframe>
             </div>
 
-            <!-- ADMOB BANNER - BOTTOM OF VIDEO -->
             <div class="admob-banner">
-                <!-- உங்கள் AdMob Banner Ad கோடை இங்கே போடவும் -->
                 <span>[ AdMob Banner Ad - Bottom ]</span>
             </div>
 
-            <!-- 3. EPISODES LIST BUTTONS -->
             <h2 class="section-title" style="max-width: 900px; margin: 1.5rem auto 1rem auto;">Episodes List</h2>
             <div id="detail-links-container"></div>
         </div>
 
         <!-- MAIN APP SECTIONS -->
         <div id="main-app-content">
-            <!-- HOME SECTION -->
             <div id="home" class="section active">
                 <div style="font-size: 0.85rem; color: #94a3b8; margin-bottom: 5px;">NAVIGATE A TO Z</div>
                 <div class="az-bar" id="az-buttons">
@@ -363,7 +351,6 @@
                 <div id="movies-grid" class="grid"></div>
             </div>
 
-            <!-- SEARCH SECTION -->
             <div id="search" class="section">
                 <h2 class="section-title">Search Anime</h2>
                 <div class="search-box" style="margin-bottom: 1.5rem;">
@@ -372,7 +359,6 @@
                 <div id="search-grid" class="grid"></div>
             </div>
 
-            <!-- UPLOAD / EDIT SECTION -->
             <div id="upload" class="section">
                 <h2 class="section-title" id="form-heading">Upload Post</h2>
                 <div id="upload-form-container" style="display:none;">
@@ -405,8 +391,8 @@
                     </div>
 
                     <div class="form-group">
-                        <label>Video Links (Paste links separated by commas ',' or line-by-line)</label>
-                        <textarea id="post-links" rows="6" placeholder="https://drive.google.com/..., https://drive.google.com/..."></textarea>
+                        <label>Video Links (Google Drive / Mega Links separated by commas or newlines)</label>
+                        <textarea id="post-links" rows="6" placeholder="https://drive.google.com/... , https://mega.nz/..."></textarea>
                     </div>
 
                     <div style="display: flex; gap: 10px;">
@@ -417,25 +403,21 @@
                 <p id="upload-warning" style="color: var(--danger-color); font-weight: bold; margin-top: 1rem;">Please login with your Google account to upload posts.</p>
             </div>
 
-            <!-- SERIES SECTION -->
             <div id="series" class="section">
                 <h2 class="section-title">All Series</h2>
                 <div id="series-only-grid" class="grid"></div>
             </div>
 
-            <!-- MOVIES SECTION -->
             <div id="movies" class="section">
                 <h2 class="section-title">All Movies</h2>
                 <div id="movies-only-grid" class="grid"></div>
             </div>
 
-            <!-- ANIME SECTION -->
             <div id="anime" class="section">
                 <h2 class="section-title">All Anime</h2>
                 <div id="anime-only-grid" class="grid"></div>
             </div>
 
-            <!-- CARTOON SECTION -->
             <div id="cartoon" class="section">
                 <h2 class="section-title">All Cartoons</h2>
                 <div id="cartoon-only-grid" class="grid"></div>
@@ -443,7 +425,6 @@
         </div>
     </div>
 
-    <!-- Bottom Navigation Bar -->
     <nav class="bottom-nav">
         <button class="nav-item active" onclick="showSection('home', this)">🏠 HOME</button>
         <button class="nav-item" onclick="showSection('search', this)">🔍 SEARCH</button>
@@ -455,7 +436,6 @@
         <button class="nav-item" id="auth-nav-btn" onclick="toggleAuth()">👤 LOGIN</button>
     </nav>
 
-    <!-- Firebase SDKs -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getFirestore, collection, addDoc, updateDoc, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
@@ -689,25 +669,42 @@
             grid.innerHTML = html;
         }
 
-        // கூகுள் டிரைவ் ஷேரிங் லிங்க்கை ஆட்டோமேட்டிக்காக Embed Preview லிங்காக மாற்றுதல்
+        // கூகுள் டிரைவ் மற்றும் மெகா (Mega) லிங்க்குகளை எம்பெட் லிங்க்காக மாற்றுதல்
         window.convertToEmbedUrl = function(url) {
             if (!url) return "";
             let trimmed = url.trim();
-            let fileId = "";
+            
+            // Google Drive Link Conversion
             if (trimmed.includes("drive.google.com")) {
                 let fileIdMatch = trimmed.match(/\/d\/([a-zA-Z0-9_-]+)/);
                 if (fileIdMatch && fileIdMatch[1]) {
-                    fileId = fileIdMatch[1];
+                    return `https://drive.google.com/file/d/${fileIdMatch[1]}/preview`;
                 } else {
                     let idMatch = trimmed.match(/[?&]id=([a-zA-Z0-9_-]+)/);
                     if (idMatch && idMatch[1]) {
-                        fileId = idMatch[1];
+                        return `https://drive.google.com/file/d/${idMatch[1]}/preview`;
                     }
                 }
             }
-            if (fileId) {
-                return `https://drive.google.com/file/d/${fileId}/preview`;
+            
+            // Mega.nz Link Conversion
+            if (trimmed.includes("mega.nz")) {
+                // ஏற்கனவே embed வடிவத்தில் இருந்தால் அப்படியே திருப்பி அனுப்பும்
+                if (trimmed.includes("/embed/")) {
+                    return trimmed;
+                }
+                // సాధారణ mega.nz/file/... லிங்க்கை எம்பெட் லிங்க்காக மாற்றுதல்
+                let megaMatch = trimmed.match(/mega\.nz\/file\/([a-zA-Z0-9_-]+)#([a-zA-Z0-9_-]+)/);
+                if (megaMatch) {
+                    return `https://mega.nz/embed/${megaMatch[1]}#${megaMatch[2]}`;
+                }
+                // கீ இல்லாமல் வெறும் file id மட்டும் இருந்தால்
+                let simpleMegaMatch = trimmed.match(/mega\.nz\/file\/([a-zA-Z0-9_-]+)/);
+                if (simpleMegaMatch) {
+                    return `https://mega.nz/embed/${simpleMegaMatch[1]}`;
+                }
             }
+
             return trimmed;
         }
 
@@ -725,7 +722,6 @@
                 console.error("Error updating views:", err);
             }
 
-            // Set Post Details at Top
             document.getElementById('detail-title').innerText = post.title;
             document.getElementById('detail-img').src = post.image;
             document.getElementById('detail-meta').innerText = `Category: ${post.category} • Genre: ${post.genre}`;
@@ -738,7 +734,6 @@
                 container.innerHTML = "<p style='color: #94a3b8; text-align: center;'>No video links added yet.</p>";
                 videoPlayer.src = "";
             } else {
-                // கமா (,) அல்லது புது வரிகள் மூலம் லிங்க்குகளைப் பிரித்தல் (Comma & Newline support)
                 let linkArray = post.links.split(/[\n,]+/);
                 let validLinks = linkArray.map(l => l.trim()).filter(l => l.length > 0);
                 
@@ -749,7 +744,6 @@
                 });
                 container.innerHTML = linksHtml;
 
-                // முதல் எபிசோடை ஆட்டோமேட்டிக்காக பிளேயரில் லோட் செய்தல்
                 if (validLinks.length > 0) {
                     let firstEmbedUrl = convertToEmbedUrl(validLinks[0]);
                     videoPlayer.src = firstEmbedUrl;
@@ -790,39 +784,48 @@
                     fetchPosts();
                 } catch (e) {
                     console.error("Error deleting document: ", e);
+                    alert("Error deleting post.");
                 }
             }
         }
 
-        window.filterByAZ = function(letter, btnElement) {
+        window.filterByAZ = function(letter, btn) {
             currentAZ = letter;
-            document.querySelectorAll('.az-bar .az-btn').forEach(btn => btn.classList.remove('active'));
-            if(btnElement) {
-                btnElement.classList.add('active');
-            }
+            document.querySelectorAll('.az-btn').forEach(b => b.classList.remove('active'));
+            if(btn) btn.classList.add('active');
             renderAllViews(allPosts);
         }
 
         window.handleSearch = function() {
-            const query = document.getElementById('search-input').value.toLowerCase();
-            let filtered = allPosts.filter(post => post.title.toLowerCase().includes(query));
-            renderGrid(filtered, 'search-grid');
+            const query = document.getElementById('search-input').value.toLowerCase().trim();
+            const searchGrid = document.getElementById('search-grid');
+            
+            if (!query) {
+                searchGrid.innerHTML = "";
+                return;
+            }
+
+            const matched = allPosts.filter(p => p.title.toLowerCase().includes(query));
+            renderGrid(matched, 'search-grid');
         }
 
-        window.showSection = function(sectionId, btnElement) {
-            document.getElementById('detail-page').classList.remove('active');
-            document.getElementById('main-app-content').style.display = 'block';
-
+        window.showSection = function(sectionId, navElement) {
             document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
             document.getElementById(sectionId).classList.add('active');
 
-            if(btnElement && btnElement.classList.contains('nav-item')) {
+            if(navElement && !navElement.id.includes('auth-nav-btn')) {
                 document.querySelectorAll('.bottom-nav .nav-item').forEach(item => item.classList.remove('active'));
-                btnElement.classList.add('active');
+                navElement.classList.add('active');
             }
-            if(sectionId === 'search') {
-                handleSearch();
+            
+            // Detail page open-il irunthal athai close seiya
+            if(document.getElementById('detail-page').classList.contains('active')) {
+                document.getElementById('detail-page').classList.remove('active');
+                document.getElementById('main-app-content').style.display = 'block';
+                document.getElementById('main-video-player').src = "";
             }
+
+            window.scrollTo(0, 0);
         }
 
         fetchPosts();
