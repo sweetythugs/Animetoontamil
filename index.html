@@ -204,20 +204,12 @@
             text-align: center;
         }
 
-        /* Crop-safe video player
-   Native <video> preserves the video's real 4:3 / 16:9 ratio.
-   object-fit: contain prevents the right/bottom edge from being cropped.
-   The iframe is only a fallback for links that cannot be played natively. */
-.video-player-wrap {
-    width: 100%;
-    max-width: 900px;
-    margin: 0 auto;
-}
-
+        /* SAME-PAGE DRIVE PLAYER: no browser fullscreen, no forced 16:9 crop */
 .video-player-container {
     position: relative;
     width: 100%;
-    aspect-ratio: 16 / 9;
+    max-width: 900px;
+    margin: 0 auto;
     background: #000;
     border-radius: 8px;
     overflow: hidden;
@@ -232,93 +224,25 @@
     aspect-ratio: 16 / 9;
 }
 
-.video-player-container video,
 .video-player-container iframe {
     position: absolute;
     inset: 0;
     width: 100%;
     height: 100%;
-    border: none;
+    border: 0;
     display: block;
-    background: #000;
-}
-
-.video-player-container video {
-    object-fit: contain;
-    object-position: center center;
-}
-
-.player-fallback {
-    display: none;
-    position: absolute;
-    inset: 0;
-    background: #000;
-}
-
-.player-fallback iframe {
-    position: absolute;
-    inset: 0;
 }
 
 @media (max-width: 600px) {
     .video-player-container {
+        width: 100%;
+        max-width: 100%;
         border-radius: 0;
         border-left: 0;
         border-right: 0;
     }
 }
-        .episode-btn {
-            display: block;
-            width: 100%;
-            max-width: 900px;
-            margin: 10px auto;
-            background: var(--card-bg);
-            color: #38bdf8;
-            padding: 12px 16px;
-            border-radius: 6px;
-            text-align: left;
-            border: 1px solid #334155;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background 0.2s;
-            box-sizing: border-box;
-        }
-        .episode-btn:hover, .episode-btn.active-ep {
-            background: var(--accent-color);
-            color: white;
-        }
-        .bottom-nav {
-            position: fixed;
-            bottom: 0; left: 0; width: 100%;
-            background: #0b0f19;
-            border-top: 1px solid #1e293b;
-            display: flex;
-            justify-content: space-around;
-            padding: 10px 0;
-            z-index: 1000;
-        }
-        .nav-item {
-            background: none; border: none;
-            color: #94a3b8; cursor: pointer;
-            display: flex; flex-direction: column;
-            align-items: center; font-size: 0.75rem; font-weight: bold;
-        }
-        .nav-item.active, .nav-item:hover { color: #38bdf8; }
-        .section { display: none; }
-        .section.active { display: block; }
-        .search-box input {
-            width: 100%; padding: 12px;
-            background: var(--card-bg); border: 1px solid #334155;
-            color: white; border-radius: 6px; font-size: 1rem;
-        }
-        .form-group { margin-bottom: 1rem; }
-        .form-group label { display: block; margin-bottom: 5px; }
-        .form-group input, .form-group select, .form-group textarea {
-            width: 100%; padding: 10px;
-            background: var(--card-bg); border: 1px solid #334155;
-            color: white; border-radius: 5px; box-sizing: border-box;
-        }
-    </style>
+</style>
 </head>
 <body>
 
@@ -351,23 +275,15 @@
             <!-- 2. VIDEO PLAYER CONTAINER -->
             <div class="video-player-wrap">
                 <div id="video-player-container" class="video-player-container ratio-16-9">
-                    <video id="main-video-player"
-                           controls
-                           playsinline
-                           preload="metadata"
-                           style="display:block;"></video>
-                    <div id="main-player-fallback" class="player-fallback">
-                        <iframe id="main-video-iframe"
-                                src=""
-                                allow="autoplay; fullscreen; picture-in-picture"
-                                allowfullscreen
-                                webkitallowfullscreen
-                                mozallowfullscreen></iframe>
-                    </div>
+                    <iframe id="main-video-player"
+                            src=""
+                            allow="autoplay; fullscreen; picture-in-picture"
+                            allowfullscreen
+                            webkitallowfullscreen
+                            mozallowfullscreen></iframe>
                 </div>
-            </div>
 
-            <!-- ADMOB BANNER - BOTTOM OF VIDEO -->
+                <!-- ADMOB BANNER - BOTTOM OF VIDEO -->
             <div class="admob-banner">
                 <!-- உங்கள் AdMob Banner Ad கோடை இங்கே போடவும் -->
                 <span>[ AdMob Banner Ad - Bottom ]</span>
@@ -390,21 +306,13 @@
             </div>
 
             <div id="episode-player-container" class="video-player-container ratio-16-9">
-                <video id="episode-video-player"
-                       controls
-                       playsinline
-                       preload="metadata"
-                       style="display:block;"></video>
-                <div id="episode-player-fallback" class="player-fallback">
-                    <iframe id="episode-video-iframe"
-                            src=""
-                            allow="autoplay; fullscreen; picture-in-picture"
-                            allowfullscreen
-                            webkitallowfullscreen
-                            mozallowfullscreen></iframe>
-                </div>
+                <iframe id="episode-video-player"
+                        src=""
+                        allow="autoplay; fullscreen; picture-in-picture"
+                        allowfullscreen
+                        webkitallowfullscreen
+                        mozallowfullscreen></iframe>
             </div>
-
             <div class="admob-banner">
                 <!-- PUT YOUR WEBSITE AD CODE HERE - BOTTOM -->
                 <span>[ Advertisement - Bottom ]</span>
@@ -502,7 +410,7 @@
                     </div>
 
                     <div class="form-group">
-                        <label>Video Format (choose the source format)</label>
+                        <label>Video Format</label>
                         <select id="post-video-ratio">
                             <option value="16:9">Widescreen (16:9)</option>
                             <option value="4:3">Classic (4:3)</option>
@@ -795,27 +703,6 @@
         }
 
         // கூகுள் டிரைவ் ஷேரிங் லிங்க்கை ஆட்டோமேட்டிக்காக Embed Preview லிங்காக மாற்றுதல்
-        // Convert a Google Drive share URL to a direct media URL for the native HTML5 player.
-        // This keeps the real video aspect ratio and prevents 4:3 videos from being cropped.
-        window.convertToDirectVideoUrl = function(url) {
-            if (!url) return "";
-            const trimmed = url.trim();
-            if (!trimmed.includes("drive.google.com")) return trimmed;
-
-            let fileId = "";
-            const fileIdMatch = trimmed.match(/\/d\/([a-zA-Z0-9_-]+)/);
-            if (fileIdMatch && fileIdMatch[1]) {
-                fileId = fileIdMatch[1];
-            } else {
-                const idMatch = trimmed.match(/[?&]id=([a-zA-Z0-9_-]+)/);
-                if (idMatch && idMatch[1]) fileId = idMatch[1];
-            }
-
-            return fileId
-                ? `https://drive.google.com/uc?export=download&id=${fileId}`
-                : trimmed;
-        }
-
         window.convertToEmbedUrl = function(url) {
             if (!url) return "";
             let trimmed = url.trim();
@@ -860,8 +747,11 @@
 
             const container = document.getElementById('detail-links-container');
             const videoPlayer = document.getElementById('main-video-player');
-            const videoIframe = document.getElementById('main-video-iframe');
-            const videoFallback = document.getElementById('main-player-fallback');
+            const playerContainer = document.getElementById('video-player-container');
+
+            // Use the saved source ratio. Never force a 16:9 box around a 4:3 video.
+            playerContainer.classList.remove('ratio-4-3', 'ratio-16-9');
+            playerContainer.classList.add(post.videoRatio === '4:3' ? 'ratio-4-3' : 'ratio-16-9');
             const playerContainer = document.getElementById('video-player-container');
 
             const ratio = post.videoRatio === '4:3' ? '4:3' : '16:9';
@@ -870,11 +760,7 @@
 
             if (!post.links || post.links.trim() === "") {
                 container.innerHTML = "<p style='color: #94a3b8; text-align: center;'>No video links added yet.</p>";
-                videoPlayer.pause();
-                videoPlayer.removeAttribute('src');
-                videoPlayer.load();
-                videoIframe.src = "";
-                videoFallback.style.display = "none";
+                videoPlayer.src = "";
             } else {
                 // கமா (,) அல்லது புது வரிகள் மூலம் லிங்க்குகளைப் பிரித்தல் (Comma & Newline support)
                 let linkArray = post.links.split(/[\n,]+/);
@@ -889,13 +775,8 @@
 
                 // முதல் எபிசோடை ஆட்டோமேட்டிக்காக பிளேயரில் லோட் செய்தல்
                 if (validLinks.length > 0) {
-                    const firstLink = validLinks[0];
-                    loadNativeOrFallback(
-                        videoPlayer,
-                        videoIframe,
-                        videoFallback,
-                        firstLink
-                    );
+                    let firstEmbedUrl = convertToEmbedUrl(validLinks[0]);
+                    videoPlayer.src = firstEmbedUrl;
                 }
             }
 
@@ -905,44 +786,26 @@
         }
 
         window.playEpisode = function(url, btnElement) {
-            const player = document.getElementById('episode-video-player');
-            const iframe = document.getElementById('episode-video-iframe');
-            const fallback = document.getElementById('episode-player-fallback');
-            const playerBox = document.getElementById('episode-player-container');
+            const videoPlayer = document.getElementById('main-video-player');
+            const playerContainer = document.getElementById('video-player-container');
             const post = allPosts.find(p => p.id === window.currentDetailPostId);
-            const ratio = post && post.videoRatio === '4:3' ? '4:3' : '16:9';
 
-            playerBox.classList.remove('ratio-4-3', 'ratio-16-9');
-            playerBox.classList.add(ratio === '4:3' ? 'ratio-4-3' : 'ratio-16-9');
+            // Keep the player on this same page. No separate window/page and no custom fullscreen.
+            const ratio = (post && post.videoRatio === '4:3') ? '4:3' : '16:9';
+            playerContainer.classList.remove('ratio-4-3', 'ratio-16-9');
+            playerContainer.classList.add(ratio === '4:3' ? 'ratio-4-3' : 'ratio-16-9');
 
-            loadNativeOrFallback(player, iframe, fallback, url);
-
-            document.getElementById('main-video-player').pause();
-            document.getElementById('main-video-player').removeAttribute('src');
-            document.getElementById('main-video-player').load();
-            document.getElementById('main-player-fallback').style.display = 'none';
-            document.getElementById('main-video-iframe').src = '';
-
-            document.getElementById('detail-page').classList.remove('active');
-            document.getElementById('main-app-content').style.display = 'none';
-            document.getElementById('episode-player-page').classList.add('active');
-
-            document.getElementById('episode-player-title').innerText =
-                (post ? post.title : 'Episode Player') + ' - ' +
-                (btnElement ? btnElement.innerText.replace('▶ ', '') : 'Episode');
+            videoPlayer.src = convertToEmbedUrl(url);
 
             document.querySelectorAll('.episode-btn').forEach(b => b.classList.remove('active-ep'));
             if (btnElement) btnElement.classList.add('active-ep');
-            window.scrollTo(0, 0);
+
+            // Bring the same-page player into view.
+            playerContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
 
         window.closeEpisodePlayer = function() {
-            const epVideo = document.getElementById('episode-video-player');
-            epVideo.pause();
-            epVideo.removeAttribute('src');
-            epVideo.load();
-            document.getElementById('episode-video-iframe').src = '';
-            document.getElementById('episode-player-fallback').style.display = 'none';
+            document.getElementById('episode-video-player').src = '';
             document.getElementById('episode-player-page').classList.remove('active');
             document.getElementById('detail-page').classList.add('active');
             document.getElementById('main-app-content').style.display = 'none';
@@ -952,19 +815,10 @@
         window.goBack = function() {
             document.getElementById('detail-page').classList.remove('active');
             document.getElementById('episode-player-page').classList.remove('active');
-            const epVideo = document.getElementById('episode-video-player');
-            epVideo.pause();
-            epVideo.removeAttribute('src');
-            epVideo.load();
-            document.getElementById('episode-video-iframe').src = '';
-            document.getElementById('episode-player-fallback').style.display = 'none';
+            document.getElementById('episode-video-player').src = '';
             document.getElementById('main-app-content').style.display = 'block';
             const videoPlayer = document.getElementById('main-video-player');
-            videoPlayer.pause();
-            videoPlayer.removeAttribute('src');
-            videoPlayer.load();
-            document.getElementById('main-video-iframe').src = '';
-            document.getElementById('main-player-fallback').style.display = 'none';
+            videoPlayer.src = "";
             fetchPosts();
         }
 
@@ -1001,23 +855,6 @@
         }
 
         window.showSection = function(sectionId, btnElement) {
-            const epVideo = document.getElementById('episode-video-player');
-            if (epVideo) {
-                epVideo.pause();
-                epVideo.removeAttribute('src');
-                epVideo.load();
-            }
-            const mainVideo = document.getElementById('main-video-player');
-            if (mainVideo) {
-                mainVideo.pause();
-                mainVideo.removeAttribute('src');
-                mainVideo.load();
-            }
-            document.getElementById('episode-video-iframe').src = '';
-            document.getElementById('main-video-iframe').src = '';
-            document.getElementById('episode-player-fallback').style.display = 'none';
-            document.getElementById('main-player-fallback').style.display = 'none';
-
             document.getElementById('detail-page').classList.remove('active');
             document.getElementById('episode-player-page').classList.remove('active');
             document.getElementById('episode-video-player').src = '';
