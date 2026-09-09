@@ -202,12 +202,12 @@
             text-align: center;
         }
 
-   .video-player-container {
+  .video-player-container {
             position: relative;
             width: 100%;
-            max-width: 700px;
+            max-width: 100%; /* மொபைல் ஆப் ஸ்கிரீனை முழுமையாக நிரப்ப */
             margin: 0 auto;
-            aspect-ratio: 25 / 18; /* நீங்கள் விரும்பும் கிளாசிக் பாக்ஸ் விகிதம் */
+            aspect-ratio: 16 / 9; /* கூகுள் டிரைவ் வீடியோக்களுக்கான நிலையான விகிதம் */
             background: #000;
             border-radius: 8px;
             overflow: hidden;
@@ -221,7 +221,7 @@
             width: 100%; 
             height: 100%;
             border: none;
-            /* கூகுள் டிரைவ் ஐஃப்ரேம் மொபைல் மற்றும் ஆப் ஸ்கிரீனில் சரியாக உட்கார இது உதவும் */
+            /* மொபைல் ஆப்பில் வீடியோ பிரேம் சுருங்கிப் போகாமல் இருக்க இது மிக முக்கியம் */
             object-fit: contain;
         }
         
