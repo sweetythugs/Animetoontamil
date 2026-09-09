@@ -204,29 +204,38 @@
             text-align: center;
         }
 
-        /* Video Player - supports both Classic 4:3 and Widescreen 16:9 */
+        /* Google Drive Player - responsive 4:3 frame
+           Keeps classic/cartoon video visible on both desktop and mobile. */
         .video-player-container {
             position: relative;
             width: 100%;
             max-width: 900px;
             margin: 0 auto;
+            aspect-ratio: 4 / 3;
+            height: auto;
             background: #000;
             border-radius: 8px;
             overflow: hidden;
             border: 1px solid #334155;
-            aspect-ratio: 16 / 9;
-        }
-        .video-player-container.ratio-4-3 {
-            aspect-ratio: 4 / 3;
-        }
-        .video-player-container.ratio-16-9 {
-            aspect-ratio: 16 / 9;
         }
         .video-player-container iframe {
+            position: absolute;
+            inset: 0;
             display: block;
             width: 100%;
             height: 100%;
             border: none;
+        }
+
+        /* Mobile: keep the same 4:3 ratio so Drive does not get forced
+           into a short 16:9 box and crop the classic video. */
+        @media (max-width: 600px) {
+            .video-player-container {
+                width: 100%;
+                max-width: 100%;
+                aspect-ratio: 4 / 3;
+                border-radius: 8px;
+            }
         }
         .episode-btn {
             display: block;
@@ -413,14 +422,6 @@
                         <textarea id="post-links" rows="6" placeholder="https://drive.google.com/..., https://drive.google.com/..."></textarea>
                     </div>
 
-                    <div class="form-group">
-                        <label>Video Screen Ratio</label>
-                        <select id="post-video-ratio">
-                            <option value="16:9">Widescreen (16:9)</option>
-                            <option value="4:3">Classic (4:3)</option>
-                        </select>
-                    </div>
-
                     <div style="display: flex; gap: 10px;">
                         <button id="submit-btn" onclick="saveUserPost()" style="background:var(--accent-color); color:white; border:none; padding:10px 20px; border-radius:5px; font-weight:bold; cursor:pointer; flex: 1;">Publish</button>
                         <button id="cancel-edit-btn" onclick="resetForm()" style="background:var(--danger-color); color:white; border:none; padding:10px 20px; border-radius:5px; font-weight:bold; cursor:pointer; display:none;">Cancel</button>
@@ -558,7 +559,6 @@
             const genre = document.getElementById('post-genre').value;
             const image = document.getElementById('post-image').value.trim();
             const newLinksInput = document.getElementById('post-links').value.trim();
-            const videoRatio = document.getElementById('post-video-ratio').value;
 
             if(!title || !image) {
                 alert("Please fill title and image URL!");
@@ -582,12 +582,12 @@
                     }
 
                     await updateDoc(doc(db, "posts", postId), {
-                        title, category, genre, image, links: updatedLinks, videoRatio
+                        title, category, genre, image, links: updatedLinks
                     });
                     alert("Post Updated & New Episodes Added Successfully!");
                 } else {
                     await addDoc(collection(db, "posts"), {
-                        title, category, genre, image, links: newLinksInput, videoRatio,
+                        title, category, genre, image, links: newLinksInput,
                         views: 0,
                         userEmail: currentUser.email,
                         createdAt: new Date()
@@ -618,8 +618,7 @@
             document.getElementById('post-category').value = post.category || 'Series';
             document.getElementById('post-genre').value = post.genre || 'Anime';
             document.getElementById('post-image').value = post.image;
-            document.getElementById('post-links').value = "";
-            document.getElementById('post-video-ratio').value = post.videoRatio || '16:9';
+            document.getElementById('post-links').value = ""; 
 
             document.getElementById('form-heading').innerText = "Edit / Add Episodes";
             document.getElementById('submit-btn').innerText = "Update & Add Episodes";
@@ -633,7 +632,6 @@
             document.getElementById('post-title').value = '';
             document.getElementById('post-image').value = '';
             document.getElementById('post-links').value = '';
-            document.getElementById('post-video-ratio').value = '16:9';
             document.getElementById('form-heading').innerText = "Upload Post";
             document.getElementById('submit-btn').innerText = "Publish";
             document.getElementById('cancel-edit-btn').style.display = "none";
@@ -728,7 +726,6 @@
 
         window.openDetailPage = async function(id) {
             const post = allPosts.find(p => p.id === id);
-            window.currentDetailPostId = id;
             if (!post) return;
 
             try {
@@ -749,12 +746,6 @@
 
             const container = document.getElementById('detail-links-container');
             const videoPlayer = document.getElementById('main-video-player');
-            const playerContainer = document.querySelector('.video-player-container');
-
-            // Existing posts without videoRatio remain 16:9; edited Classic posts use 4:3.
-            const ratio = post.videoRatio === '4:3' ? '4:3' : '16:9';
-            playerContainer.classList.remove('ratio-4-3', 'ratio-16-9');
-            playerContainer.classList.add(ratio === '4:3' ? 'ratio-4-3' : 'ratio-16-9');
 
             if (!post.links || post.links.trim() === "") {
                 container.innerHTML = "<p style='color: #94a3b8; text-align: center;'>No video links added yet.</p>";
@@ -785,14 +776,7 @@
 
         window.playEpisode = function(url, btnElement) {
             const videoPlayer = document.getElementById('main-video-player');
-            const playerContainer = document.querySelector('.video-player-container');
-            const post = allPosts.find(p => p.id === window.currentDetailPostId);
-
-            const ratio = post && post.videoRatio === '4:3' ? '4:3' : '16:9';
-            playerContainer.classList.remove('ratio-4-3', 'ratio-16-9');
-            playerContainer.classList.add(ratio === '4:3' ? 'ratio-4-3' : 'ratio-16-9');
-
-            videoPlayer.src = convertToEmbedUrl(url);
+            videoPlayer.src = url;
 
             document.querySelectorAll('.episode-btn').forEach(b => b.classList.remove('active-ep'));
             if(btnElement) btnElement.classList.add('active-ep');
@@ -803,7 +787,6 @@
             document.getElementById('main-app-content').style.display = 'block';
             const videoPlayer = document.getElementById('main-video-player');
             videoPlayer.src = "";
-            window.currentDetailPostId = null;
             fetchPosts();
         }
 
