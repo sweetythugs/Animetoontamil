@@ -202,12 +202,12 @@
             text-align: center;
         }
 
-    .video-player-container {
+   .video-player-container {
             position: relative;
             width: 100%;
             max-width: 700px;
             margin: 0 auto;
-            aspect-ratio: 25 / 18; /* நீங்கள் வைத்திருக்கும் அதே விகிதம் */
+            aspect-ratio: 25 / 18; /* நீங்கள் விரும்பும் கிளாசிக் பாக்ஸ் விகிதம் */
             background: #000;
             border-radius: 8px;
             overflow: hidden;
@@ -221,9 +221,11 @@
             width: 100%; 
             height: 100%;
             border: none;
-            /* இது லேப்டாப் மற்றும் மொபைல் இரண்டிலும் வீடியோவை அந்த பாக்ஸுக்குள் நூற்றுக்கு நூறு சதவீதம் சரியாகப் பொருத்தும் */
-            object-fit: cover; 
-        }        .episode-btn {
+            /* கூகுள் டிரைவ் ஐஃப்ரேம் மொபைல் மற்றும் ஆப் ஸ்கிரீனில் சரியாக உட்கார இது உதவும் */
+            object-fit: contain;
+        }
+        
+        .episode-btn {
             display: block;
             width: 100%;
             max-width: 900px;
