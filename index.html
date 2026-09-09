@@ -204,30 +204,25 @@
             text-align: center;
         }
 
-      /* Fixed Video Player Container to prevent zooming and cutting of classic videos */
-        .video-player-container {
+    .video-player-container {
             position: relative;
             width: 100%;
             max-width: 900px;
             margin: 0 auto;
+            aspect-ratio: 4 / 3; /* கிளாசிக் மற்றும் பழைய கார்ட்டூன் வீடியோக்களுக்கு இது மிகச் சரியாகப் பொருந்தும் */
             background: #000;
             border-radius: 8px;
             overflow: hidden;
             border: 1px solid #334155;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            aspect-ratio: 16 / 9; /* இயல்புநிலை விகிதம் */
         }
-        
         .video-player-container iframe {
             width: 100%;
             height: 100%;
             border: none;
-            /* கூகுள் டிரைவ் வீடியோ கட் ஆகாமல் முழுமையாகத் தெரிய இது உதவுகிறது */
-            transform: scale(1);
+            position: absolute;
+            top: 0;
+            left: 0;
         }
-
         
         .episode-btn {
             display: block;
