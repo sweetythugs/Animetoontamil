@@ -204,57 +204,69 @@
             text-align: center;
         }
 
-        /* Google Drive Player - supports 16:9 and 4:3 without cropping */
-        .video-player-wrap {
-            width: 100%;
-            max-width: 900px;
-            margin: 0 auto;
-        }
+        /* Crop-safe video player
+   Native <video> preserves the video's real 4:3 / 16:9 ratio.
+   object-fit: contain prevents the right/bottom edge from being cropped.
+   The iframe is only a fallback for links that cannot be played natively. */
+.video-player-wrap {
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+}
 
-        .video-player-container {
-            position: relative;
-            width: 100%;
-            aspect-ratio: 16 / 9;
-            background: #000;
-            border-radius: 8px;
-            overflow: hidden;
-            border: 1px solid #334155;
-        }
+.video-player-container {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background: #000;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid #334155;
+}
 
-        .video-player-container.ratio-4-3 {
-            aspect-ratio: 4 / 3;
-        }
+.video-player-container.ratio-4-3 {
+    aspect-ratio: 4 / 3;
+}
 
-        .video-player-container.ratio-16-9 {
-            aspect-ratio: 16 / 9;
-        }
+.video-player-container.ratio-16-9 {
+    aspect-ratio: 16 / 9;
+}
 
-        .video-player-container iframe {
-            position: absolute;
-            inset: 0;
-            width: 100%;
-            height: 100%;
-            border: none;
-            display: block;
-            background: #000;
-        }
+.video-player-container video,
+.video-player-container iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+    display: block;
+    background: #000;
+}
 
-        .episode-player-title {
-            width: 100%;
-            max-width: 900px;
-            margin: 0 auto 12px auto;
-            color: #38bdf8;
-            font-size: 1.35rem;
-            font-weight: bold;
-        }
+.video-player-container video {
+    object-fit: contain;
+    object-position: center center;
+}
 
-        @media (max-width: 600px) {
-            .video-player-container {
-                border-radius: 0;
-                border-left: 0;
-                border-right: 0;
-            }
-        }
+.player-fallback {
+    display: none;
+    position: absolute;
+    inset: 0;
+    background: #000;
+}
+
+.player-fallback iframe {
+    position: absolute;
+    inset: 0;
+}
+
+@media (max-width: 600px) {
+    .video-player-container {
+        border-radius: 0;
+        border-left: 0;
+        border-right: 0;
+    }
+}
         .episode-btn {
             display: block;
             width: 100%;
@@ -339,11 +351,19 @@
             <!-- 2. VIDEO PLAYER CONTAINER -->
             <div class="video-player-wrap">
                 <div id="video-player-container" class="video-player-container ratio-16-9">
-                    <iframe id="main-video-player" src=""
-                            allow="autoplay; fullscreen; picture-in-picture"
-                            allowfullscreen
-                            webkitallowfullscreen
-                            mozallowfullscreen></iframe>
+                    <video id="main-video-player"
+                           controls
+                           playsinline
+                           preload="metadata"
+                           style="display:block;"></video>
+                    <div id="main-player-fallback" class="player-fallback">
+                        <iframe id="main-video-iframe"
+                                src=""
+                                allow="autoplay; fullscreen; picture-in-picture"
+                                allowfullscreen
+                                webkitallowfullscreen
+                                mozallowfullscreen></iframe>
+                    </div>
                 </div>
             </div>
 
@@ -370,9 +390,19 @@
             </div>
 
             <div id="episode-player-container" class="video-player-container ratio-16-9">
-                <iframe id="episode-video-player" src=""
-                    allow="autoplay; fullscreen; picture-in-picture"
-                    allowfullscreen webkitallowfullscreen mozallowfullscreen></iframe>
+                <video id="episode-video-player"
+                       controls
+                       playsinline
+                       preload="metadata"
+                       style="display:block;"></video>
+                <div id="episode-player-fallback" class="player-fallback">
+                    <iframe id="episode-video-iframe"
+                            src=""
+                            allow="autoplay; fullscreen; picture-in-picture"
+                            allowfullscreen
+                            webkitallowfullscreen
+                            mozallowfullscreen></iframe>
+                </div>
             </div>
 
             <div class="admob-banner">
@@ -472,7 +502,7 @@
                     </div>
 
                     <div class="form-group">
-                        <label>Video Format</label>
+                        <label>Video Format (choose the source format)</label>
                         <select id="post-video-ratio">
                             <option value="16:9">Widescreen (16:9)</option>
                             <option value="4:3">Classic (4:3)</option>
@@ -765,6 +795,27 @@
         }
 
         // கூகுள் டிரைவ் ஷேரிங் லிங்க்கை ஆட்டோமேட்டிக்காக Embed Preview லிங்காக மாற்றுதல்
+        // Convert a Google Drive share URL to a direct media URL for the native HTML5 player.
+        // This keeps the real video aspect ratio and prevents 4:3 videos from being cropped.
+        window.convertToDirectVideoUrl = function(url) {
+            if (!url) return "";
+            const trimmed = url.trim();
+            if (!trimmed.includes("drive.google.com")) return trimmed;
+
+            let fileId = "";
+            const fileIdMatch = trimmed.match(/\/d\/([a-zA-Z0-9_-]+)/);
+            if (fileIdMatch && fileIdMatch[1]) {
+                fileId = fileIdMatch[1];
+            } else {
+                const idMatch = trimmed.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+                if (idMatch && idMatch[1]) fileId = idMatch[1];
+            }
+
+            return fileId
+                ? `https://drive.google.com/uc?export=download&id=${fileId}`
+                : trimmed;
+        }
+
         window.convertToEmbedUrl = function(url) {
             if (!url) return "";
             let trimmed = url.trim();
@@ -809,6 +860,8 @@
 
             const container = document.getElementById('detail-links-container');
             const videoPlayer = document.getElementById('main-video-player');
+            const videoIframe = document.getElementById('main-video-iframe');
+            const videoFallback = document.getElementById('main-player-fallback');
             const playerContainer = document.getElementById('video-player-container');
 
             const ratio = post.videoRatio === '4:3' ? '4:3' : '16:9';
@@ -817,7 +870,11 @@
 
             if (!post.links || post.links.trim() === "") {
                 container.innerHTML = "<p style='color: #94a3b8; text-align: center;'>No video links added yet.</p>";
-                videoPlayer.src = "";
+                videoPlayer.pause();
+                videoPlayer.removeAttribute('src');
+                videoPlayer.load();
+                videoIframe.src = "";
+                videoFallback.style.display = "none";
             } else {
                 // கமா (,) அல்லது புது வரிகள் மூலம் லிங்க்குகளைப் பிரித்தல் (Comma & Newline support)
                 let linkArray = post.links.split(/[\n,]+/);
@@ -832,8 +889,13 @@
 
                 // முதல் எபிசோடை ஆட்டோமேட்டிக்காக பிளேயரில் லோட் செய்தல்
                 if (validLinks.length > 0) {
-                    let firstEmbedUrl = convertToEmbedUrl(validLinks[0]);
-                    videoPlayer.src = firstEmbedUrl;
+                    const firstLink = validLinks[0];
+                    loadNativeOrFallback(
+                        videoPlayer,
+                        videoIframe,
+                        videoFallback,
+                        firstLink
+                    );
                 }
             }
 
@@ -844,15 +906,23 @@
 
         window.playEpisode = function(url, btnElement) {
             const player = document.getElementById('episode-video-player');
+            const iframe = document.getElementById('episode-video-iframe');
+            const fallback = document.getElementById('episode-player-fallback');
             const playerBox = document.getElementById('episode-player-container');
             const post = allPosts.find(p => p.id === window.currentDetailPostId);
             const ratio = post && post.videoRatio === '4:3' ? '4:3' : '16:9';
 
             playerBox.classList.remove('ratio-4-3', 'ratio-16-9');
             playerBox.classList.add(ratio === '4:3' ? 'ratio-4-3' : 'ratio-16-9');
-            player.src = url;
 
-            document.getElementById('main-video-player').src = '';
+            loadNativeOrFallback(player, iframe, fallback, url);
+
+            document.getElementById('main-video-player').pause();
+            document.getElementById('main-video-player').removeAttribute('src');
+            document.getElementById('main-video-player').load();
+            document.getElementById('main-player-fallback').style.display = 'none';
+            document.getElementById('main-video-iframe').src = '';
+
             document.getElementById('detail-page').classList.remove('active');
             document.getElementById('main-app-content').style.display = 'none';
             document.getElementById('episode-player-page').classList.add('active');
@@ -867,7 +937,12 @@
         }
 
         window.closeEpisodePlayer = function() {
-            document.getElementById('episode-video-player').src = '';
+            const epVideo = document.getElementById('episode-video-player');
+            epVideo.pause();
+            epVideo.removeAttribute('src');
+            epVideo.load();
+            document.getElementById('episode-video-iframe').src = '';
+            document.getElementById('episode-player-fallback').style.display = 'none';
             document.getElementById('episode-player-page').classList.remove('active');
             document.getElementById('detail-page').classList.add('active');
             document.getElementById('main-app-content').style.display = 'none';
@@ -877,10 +952,19 @@
         window.goBack = function() {
             document.getElementById('detail-page').classList.remove('active');
             document.getElementById('episode-player-page').classList.remove('active');
-            document.getElementById('episode-video-player').src = '';
+            const epVideo = document.getElementById('episode-video-player');
+            epVideo.pause();
+            epVideo.removeAttribute('src');
+            epVideo.load();
+            document.getElementById('episode-video-iframe').src = '';
+            document.getElementById('episode-player-fallback').style.display = 'none';
             document.getElementById('main-app-content').style.display = 'block';
             const videoPlayer = document.getElementById('main-video-player');
-            videoPlayer.src = "";
+            videoPlayer.pause();
+            videoPlayer.removeAttribute('src');
+            videoPlayer.load();
+            document.getElementById('main-video-iframe').src = '';
+            document.getElementById('main-player-fallback').style.display = 'none';
             fetchPosts();
         }
 
@@ -917,6 +1001,23 @@
         }
 
         window.showSection = function(sectionId, btnElement) {
+            const epVideo = document.getElementById('episode-video-player');
+            if (epVideo) {
+                epVideo.pause();
+                epVideo.removeAttribute('src');
+                epVideo.load();
+            }
+            const mainVideo = document.getElementById('main-video-player');
+            if (mainVideo) {
+                mainVideo.pause();
+                mainVideo.removeAttribute('src');
+                mainVideo.load();
+            }
+            document.getElementById('episode-video-iframe').src = '';
+            document.getElementById('main-video-iframe').src = '';
+            document.getElementById('episode-player-fallback').style.display = 'none';
+            document.getElementById('main-player-fallback').style.display = 'none';
+
             document.getElementById('detail-page').classList.remove('active');
             document.getElementById('episode-player-page').classList.remove('active');
             document.getElementById('episode-video-player').src = '';
