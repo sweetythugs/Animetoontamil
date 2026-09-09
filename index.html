@@ -204,15 +204,14 @@
             text-align: center;
         }
 
-        /* Google Drive Player - responsive 4:3 frame
-           Keeps classic/cartoon video visible on both desktop and mobile. */
+        /* Google Drive Player - player frame only */
         .video-player-container {
             position: relative;
             width: 100%;
             max-width: 900px;
             margin: 0 auto;
-            aspect-ratio: 4 / 3;
-            height: auto;
+            aspect-ratio: 16 / 9;
+            min-height: 220px;
             background: #000;
             border-radius: 8px;
             overflow: hidden;
@@ -224,17 +223,34 @@
             display: block;
             width: 100%;
             height: 100%;
-            border: none;
+            border: 0;
+            background: #000;
         }
+        .drive-loading {
+            position: absolute;
+            inset: 0;
+            z-index: 2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #000;
+            color: #cbd5e1;
+            font-size: 14px;
+            pointer-events: none;
+            transition: opacity .2s ease;
+        }
+        .drive-loading.hidden { opacity: 0; }
 
-        /* Mobile: keep the same 4:3 ratio so Drive does not get forced
-           into a short 16:9 box and crop the classic video. */
+        /* Mobile: do not force the Drive iframe into a short 16:9 box.
+           A taller frame gives the Drive viewer room to render portrait videos
+           without the page itself cropping the iframe. */
         @media (max-width: 600px) {
             .video-player-container {
                 width: 100%;
                 max-width: 100%;
-                aspect-ratio: 4 / 3;
-                border-radius: 8px;
+                aspect-ratio: 9 / 16;
+                min-height: 0;
+                border-radius: 6px;
             }
         }
         .episode-btn {
@@ -319,7 +335,8 @@
             </div>
 
             <!-- 2. VIDEO PLAYER CONTAINER -->
-            <div class="video-player-container">
+            <div class="video-player-container" id="video-player-container">
+                <div class="drive-loading" id="drive-loading">Loading video…</div>
                 <iframe id="main-video-player" src="" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen webkitallowfullscreen mozallowfullscreen></iframe>
             </div>
 
@@ -724,6 +741,49 @@
             return trimmed;
         }
 
+        // Google Drive player: load after the detail page is visible, and recreate
+        // the iframe on a slow/failed first initialisation. This only affects the player.
+        let driveLoadTimer = null;
+        let driveRetryDone = false;
+        let driveLoadToken = 0;
+
+        function loadDrivePlayer(url, retry = true) {
+            const player = document.getElementById('main-video-player');
+            const loading = document.getElementById('drive-loading');
+            if (!player) return;
+
+            driveLoadToken++;
+            const token = driveLoadToken;
+            driveRetryDone = !retry;
+            if (driveLoadTimer) clearTimeout(driveLoadTimer);
+            if (loading) loading.classList.remove('hidden');
+
+            // Reset the iframe completely. This avoids reusing a broken mobile Drive state.
+            player.src = 'about:blank';
+
+            window.setTimeout(() => {
+                if (token !== driveLoadToken) return;
+                player.src = url || 'about:blank';
+
+                // Drive can take longer to initialise on mobile. If it has not
+                // completed its first load, recreate it once rather than asking
+                // the user to press Back and open the page again.
+                driveLoadTimer = window.setTimeout(() => {
+                    if (token !== driveLoadToken || driveRetryDone || !url) return;
+                    driveRetryDone = true;
+                    loadDrivePlayer(url, false);
+                }, 3500);
+            }, 350);
+
+            player.onload = () => {
+                if (token !== driveLoadToken) return;
+                if (driveLoadTimer) clearTimeout(driveLoadTimer);
+                window.setTimeout(() => {
+                    if (token === driveLoadToken && loading) loading.classList.add('hidden');
+                }, 250);
+            };
+        }
+
         window.openDetailPage = async function(id) {
             const post = allPosts.find(p => p.id === id);
             if (!post) return;
@@ -731,14 +791,11 @@
             try {
                 let newViews = (post.views || 0) + 1;
                 post.views = newViews;
-                await updateDoc(doc(db, "posts", id), {
-                    views: newViews
-                });
+                await updateDoc(doc(db, "posts", id), { views: newViews });
             } catch (err) {
                 console.error("Error updating views:", err);
             }
 
-            // Set Post Details at Top
             document.getElementById('detail-title').innerText = post.title;
             document.getElementById('detail-img').src = post.image;
             document.getElementById('detail-meta').innerText = `Category: ${post.category} • Genre: ${post.genre}`;
@@ -749,12 +806,11 @@
 
             if (!post.links || post.links.trim() === "") {
                 container.innerHTML = "<p style='color: #94a3b8; text-align: center;'>No video links added yet.</p>";
-                videoPlayer.src = "";
+                loadDrivePlayer('', false);
             } else {
-                // கமா (,) அல்லது புது வரிகள் மூலம் லிங்க்குகளைப் பிரித்தல் (Comma & Newline support)
                 let linkArray = post.links.split(/[\n,]+/);
                 let validLinks = linkArray.map(l => l.trim()).filter(l => l.length > 0);
-                
+
                 let linksHtml = '';
                 validLinks.forEach((link, index) => {
                     let embedUrl = convertToEmbedUrl(link);
@@ -762,10 +818,13 @@
                 });
                 container.innerHTML = linksHtml;
 
-                // முதல் எபிசோடை ஆட்டோமேட்டிக்காக பிளேயரில் லோட் செய்தல்
+                document.getElementById('main-app-content').style.display = 'none';
+                document.getElementById('detail-page').classList.add('active');
+                window.scrollTo(0, 0);
+
+                // Start Drive only after the detail page is actually shown.
                 if (validLinks.length > 0) {
-                    let firstEmbedUrl = convertToEmbedUrl(validLinks[0]);
-                    videoPlayer.src = firstEmbedUrl;
+                    loadDrivePlayer(convertToEmbedUrl(validLinks[0]), true);
                 }
             }
 
@@ -775,18 +834,20 @@
         }
 
         window.playEpisode = function(url, btnElement) {
-            const videoPlayer = document.getElementById('main-video-player');
-            videoPlayer.src = url;
-
+            loadDrivePlayer(url, true);
             document.querySelectorAll('.episode-btn').forEach(b => b.classList.remove('active-ep'));
-            if(btnElement) btnElement.classList.add('active-ep');
+            if (btnElement) btnElement.classList.add('active-ep');
         }
 
         window.goBack = function() {
+            driveLoadToken++;
+            if (driveLoadTimer) clearTimeout(driveLoadTimer);
+            const videoPlayer = document.getElementById('main-video-player');
+            const loading = document.getElementById('drive-loading');
+            if (videoPlayer) videoPlayer.src = 'about:blank';
+            if (loading) loading.classList.remove('hidden');
             document.getElementById('detail-page').classList.remove('active');
             document.getElementById('main-app-content').style.display = 'block';
-            const videoPlayer = document.getElementById('main-video-player');
-            videoPlayer.src = "";
             fetchPosts();
         }
 
