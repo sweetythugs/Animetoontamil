@@ -3,23 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Video.js HTML5 Player</title>
-    <!-- Video.js சிடிஎன் (CDN) ஸ்டைல் ஷீட் -->
-    <link href="https://vjs.zencdn.net/8.10.0/video-js.css" rel="stylesheet" />
+    <title>Drive & Mega HTML5 Player Test</title>
     <style>
         body {
             background-color: #0b0f19;
             color: #f8fafc;
             font-family: Arial, sans-serif;
             padding: 20px;
-            max-width: 900px;
+            max-width: 800px;
             margin: auto;
         }
-        .player-box {
+        .test-box {
             background: #1e293b;
             padding: 20px;
             border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
             border: 1px solid #334155;
         }
         .input-group {
@@ -48,7 +45,15 @@
         button:hover {
             background: #2563eb;
         }
-        .status-msg {
+        video {
+            width: 100%;
+            max-height: 450px;
+            background: #000;
+            border-radius: 6px;
+            margin-top: 20px;
+            outline: none;
+        }
+        .log-box {
             margin-top: 15px;
             font-size: 0.85rem;
             color: #38bdf8;
@@ -57,85 +62,66 @@
             border-radius: 4px;
             word-break: break-all;
         }
-        .video-container {
-            margin-top: 20px;
-        }
-        /* Video.js பிளேயரை கஸ்டமைஸ் செய்ய */
-        .video-js {
-            width: 100%;
-            height: 450px;
-            border-radius: 6px;
-        }
     </style>
 </head>
 <body>
 
-    <h2>Video.js Direct Stream Player</h2>
+    <h2>HTML5 Video Player - Local Test</h2>
 
-    <div class="player-box">
+    <div class="test-box">
         <div class="input-group">
-            <label>Google Drive அல்லது Mega லிங்க்கை இங்கே ஒட்டவும்:</label>
-            <input type="text" id="media-url" placeholder="https://drive.google.com/file/d/... அல்லது Mega Link">
+            <label>Google Drive அல்லது Mega லிங்க்கை இங்கே போடுங்கள்:</label>
+            <input type="text" id="test-url" placeholder="https://drive.google.com/file/d/... அல்லது Mega Link">
         </div>
-        <button onclick="playWithVideoJS()">Convert & Play</button>
+        <button onclick="testPlayer()">Convert & Play</button>
 
-        <div id="status-box" class="status-msg">Status: Ready</div>
+        <div id="log-status" class="log-box">Status: Ready for testing</div>
 
-        <div class="video-container">
-            <!-- Video.js க்கான டேக் -->
-            <video
-                id="my-video-player"
-                class="video-js vjs-big-play-centered vjs-theme-city"
-                controls
-                preload="auto"
-                data-setup='{}'>
-                <p class="vjs-no-js">
-                    To view this video please enable JavaScript, and consider upgrading to a
-                    web browser that supports HTML5 video
-                </p>
-            </video>
-        </div>
+        <!-- ஒரிஜினல் HTML5 பிளேயர் (No Iframe) -->
+        <video id="local-video-player" controls preload="metadata">
+            Your browser does not support the video tag.
+        </video>
     </div>
 
-    <!-- Video.js ஜாவாஸ்கிரிப்ட் லைப்ரரி -->
-    <script src="https://vjs.zencdn.net/8.10.0/video.js"></script>
-
     <script>
-        function playWithVideoJS() {
-            let inputUrl = document.getElementById('media-url').value.trim();
-            let statusBox = document.getElementById('status-box');
+        function testPlayer() {
+            let inputVal = document.getElementById('test-url').value.trim();
+            let videoEl = document.getElementById('local-video-player');
+            let logEl = document.getElementById('log-status');
 
-            if (!inputUrl) {
-                alert("தயவுசெய்து லிங்கை உள்ளிடவும்!");
+            if (!inputVal) {
+                alert("லிங்க்கை உள்ளிடவும்!");
                 return;
             }
 
-            let finalStreamUrl = inputUrl;
+            let finalUrl = inputVal;
 
             // 1. Google Drive Link Conversion
-            if (inputUrl.includes("drive.google.com")) {
-                let match = inputUrl.match(/\/d\/([a-zA-Z0-9_-]+)/);
+            if (inputVal.includes("drive.google.com")) {
+                let match = inputVal.match(/\/d\/([a-zA-Z0-9_-]+)/);
                 if (match && match[1]) {
                     let fileId = match[1];
-                    finalStreamUrl = `https://lh3.googleusercontent.com/d/${fileId}=s0`;
-                    statusBox.innerText = "Converted Drive Link: " + finalStreamUrl;
+                    // டைரக்ட் ஸ்ட்ரீமிங் லிங்க்காக மாறுவது
+                    finalUrl = `https://lh3.googleusercontent.com/d/${fileId}=s0`;
+                    logEl.innerText = "Converted Google Drive -> Direct Link: " + finalUrl;
                 }
             } 
-            // 2. Mega Link Handling
-            else if (inputUrl.includes("mega.nz")) {
-                finalStreamUrl = inputUrl;
-                statusBox.innerText = "Loaded Mega Link: " + finalStreamUrl;
+            // 2. Mega Link Conversion Handling
+            else if (inputVal.includes("mega.nz")) {
+                // Mega லிங்க்குகள் நேரடியாக பிரவுசரில் HTML5 டேக் மூலம் ஓட பிரத்யேக ஸ்ட்ரீமிங் கீ அல்லது ஃபார்மட் தேவைப்படும்.
+                // ஒருவேளை நேரடி எம்பெட் லிங்க்காக மாற்ற வேண்டுமெனில் இங்கே லாஜிக் செயலாக்கப்படும்.
+                finalUrl = inputVal; 
+                logEl.innerText = "Mega Link loaded: " + finalUrl;
             } else {
-                statusBox.innerText = "Loaded Direct URL: " + finalStreamUrl;
+                logEl.innerText = "Loaded Direct URL: " + finalUrl;
             }
 
-            // Video.js பிளேயர் மூலமாக சோர்ஸை மாற்றி இயக்குவது
-            var player = videojs('my-video-player');
-            player.src({ type: 'video/mp4', src: finalStreamUrl });
-            player.load();
-            player.play().catch(err => {
-                console.log("Playback blocked:", err);
-                statusBox.innerText += " | Note: Click play on player.";
+            // பிளேயரில் லிங்கை செட் செய்து ரன் செய்வது
+            videoEl.src = finalUrl;
+            videoEl.load();
+            videoEl.play().catch(err => {
+                console.log("Play error:", err);
+                logEl.innerText += " | Note: Browser blocked autoplay or format restricted.";
             });
         }
     </script>
