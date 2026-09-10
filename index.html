@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pure HTML5 Direct Video Player</title>
+    <title>Telegram HTML5 Video Player Test</title>
     <style>
         body {
             background-color: #0b0f19;
@@ -55,7 +55,7 @@
             border-radius: 4px;
             word-break: break-all;
         }
-        /* ஐபிரேம் கிடையாது - ஒரிஜினல் HTML5 வீடியோ பிளேயர் ஸ்டைல் */
+        /* அசல் HTML5 வீடியோ பிளேயர் ஸ்டைல் */
         video {
             width: 100%;
             max-height: 480px;
@@ -68,60 +68,46 @@
 </head>
 <body>
 
-    <h2>Pure HTML5 Video Player (No Iframe)</h2>
+    <h2>Telegram Video HTML5 Player Test</h2>
 
     <div class="player-box">
         <div class="input-group">
-            <label>Google Drive வீடியோ லிங்க்கை இங்கே ஒட்டவும்:</label>
-            <input type="text" id="media-url" placeholder="https://drive.google.com/file/d/.../view">
+            <label>டெலகிராம் வீடியோவின் டைரக்ட் ஃபைல் லிங்க்கை இங்கே ஒட்டவும்:</label>
+            <input type="text" id="media-url" placeholder="https://... (Telegram Direct File Link)">
         </div>
-        <button onclick="playPureHTML5Video()">Convert & Play in HTML5</button>
+        <button onclick="playTelegramVideo()">Play in HTML5 Player</button>
 
         <div id="status-box" class="status-msg">Status: Ready</div>
 
-        <!-- ஐபிரேம் இல்லாத அசல் HTML5 வீடியோ டேக் -->
-        <video id="native-html5-player" controls preload="metadata">
+        <!-- ஐபிரேம் இல்லாத ஒரிஜினல் HTML5 வீடியோ டேக் -->
+        <video id="html5-video-player" controls preload="metadata">
             Your browser does not support the video tag.
         </video>
     </div>
 
     <script>
-        function playPureHTML5Video() {
+        function playTelegramVideo() {
             let inputUrl = document.getElementById('media-url').value.trim();
-            let videoElement = document.getElementById('native-html5-player');
+            let videoElement = document.getElementById('html5-video-player');
             let statusBox = document.getElementById('status-box');
 
             if (!inputUrl) {
-                alert("தயவுசெய்து லிங்கை உள்ளிடவும்!");
+                alert("தயவுசெய்து டெலகிராம் லிங்கை உள்ளிடவும்!");
                 return;
             }
 
-            let directStreamUrl = inputUrl;
+            statusBox.innerText = "Loaded URL: " + inputUrl;
 
-            // Google Drive ஃபைல் ஐடியை மட்டும் தனiyாக பிரித்தெடுத்தல்
-            if (inputUrl.includes("drive.google.com")) {
-                let match = inputUrl.match(/\/d\/([a-zA-Z0-9_-]+)/);
-                if (match && match[1]) {
-                    let fileId = match[1];
-                    
-                    // கூகுள் டிரைவ் வீடியோவை நேரடியாக டவுன்லோட்/ஸ்ட்ரீம் செய்யும் அதிகாரப்பூர்வ பைனரி லிங்க் ஃபார்மட்
-                    directStreamUrl = `https://docs.google.com/uc?export=download&id=${fileId}`;
-                    
-                    statusBox.innerText = "Converted to Direct Stream URL: " + directStreamUrl;
-                }
-            }
-
-            // வீடியோ பிளேயருக்கு சோர்ஸை மாற்றுவது
+            // வீடியோ பிளேயரில் சோர்ஸை செட் செய்து இயக்குவது
             videoElement.pause();
-            videoElement.src = directStreamUrl;
+            videoElement.src = inputUrl;
             videoElement.load();
             
-            // பிளே செய்ய முயற்சிப்பது
             let playPromise = videoElement.play();
             if (playPromise !== undefined) {
                 playPromise.catch(error => {
-                    console.log("Autoplay blocked or format needs manual play click:", error);
-                    statusBox.innerText += " | Note: Click the play button on the video player.";
+                    console.log("Autoplay restricted:", error);
+                    statusBox.innerText += " | Note: Click play button on the player.";
                 });
             }
         }
