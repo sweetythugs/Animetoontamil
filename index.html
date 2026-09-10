@@ -204,18 +204,17 @@
             text-align: center;
         }
 
-        /* Responsive Video Player
-           Supports Widescreen 16:9 and Classic 4:3 videos without cropping. */
+        /* Video Player - supports both Classic 4:3 and Widescreen 16:9 */
         .video-player-container {
             position: relative;
             width: 100%;
             max-width: 900px;
             margin: 0 auto;
-            aspect-ratio: 16 / 9;
             background: #000;
             border-radius: 8px;
             overflow: hidden;
             border: 1px solid #334155;
+            aspect-ratio: 16 / 9;
         }
         .video-player-container.ratio-4-3 {
             aspect-ratio: 4 / 3;
@@ -224,27 +223,10 @@
             aspect-ratio: 16 / 9;
         }
         .video-player-container iframe {
-            position: absolute;
-            inset: 0;
             display: block;
             width: 100%;
             height: 100%;
             border: none;
-            background: #000;
-        }
-        .video-player-container iframe:fullscreen {
-            width: 100vw;
-            height: 100vh;
-            background: #000;
-        }
-        @media (max-width: 600px) {
-            .video-player-container {
-                width: 100%;
-                max-width: 100%;
-                border-radius: 0;
-                border-left: 0;
-                border-right: 0;
-            }
         }
         .episode-btn {
             display: block;
@@ -329,11 +311,7 @@
 
             <!-- 2. VIDEO PLAYER CONTAINER -->
             <div class="video-player-container">
-                <iframe id="main-video-player" src=""
-                        allow="autoplay; fullscreen; picture-in-picture"
-                        allowfullscreen
-                        webkitallowfullscreen
-                        mozallowfullscreen></iframe>
+                <iframe id="main-video-player" src="" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen webkitallowfullscreen mozallowfullscreen></iframe>
             </div>
 
             <!-- ADMOB BANNER - BOTTOM OF VIDEO -->
@@ -436,7 +414,7 @@
                     </div>
 
                     <div class="form-group">
-                        <label>Video Format</label>
+                        <label>Video Screen Ratio</label>
                         <select id="post-video-ratio">
                             <option value="16:9">Widescreen (16:9)</option>
                             <option value="4:3">Classic (4:3)</option>
@@ -580,6 +558,7 @@
             const genre = document.getElementById('post-genre').value;
             const image = document.getElementById('post-image').value.trim();
             const newLinksInput = document.getElementById('post-links').value.trim();
+            const videoRatio = document.getElementById('post-video-ratio').value;
 
             if(!title || !image) {
                 alert("Please fill title and image URL!");
@@ -603,14 +582,12 @@
                     }
 
                     await updateDoc(doc(db, "posts", postId), {
-                        title, category, genre, image, links: updatedLinks,
-                        videoRatio: document.getElementById('post-video-ratio').value
+                        title, category, genre, image, links: updatedLinks, videoRatio
                     });
                     alert("Post Updated & New Episodes Added Successfully!");
                 } else {
                     await addDoc(collection(db, "posts"), {
-                        title, category, genre, image, links: newLinksInput,
-                        videoRatio: document.getElementById('post-video-ratio').value,
+                        title, category, genre, image, links: newLinksInput, videoRatio,
                         views: 0,
                         userEmail: currentUser.email,
                         createdAt: new Date()
@@ -751,6 +728,7 @@
 
         window.openDetailPage = async function(id) {
             const post = allPosts.find(p => p.id === id);
+            window.currentDetailPostId = id;
             if (!post) return;
 
             try {
@@ -773,8 +751,7 @@
             const videoPlayer = document.getElementById('main-video-player');
             const playerContainer = document.querySelector('.video-player-container');
 
-            // Keep the original video frame visible: 16:9 for modern videos,
-            // 4:3 for classic/old videos. Existing posts default to 16:9.
+            // Existing posts without videoRatio remain 16:9; edited Classic posts use 4:3.
             const ratio = post.videoRatio === '4:3' ? '4:3' : '16:9';
             playerContainer.classList.remove('ratio-4-3', 'ratio-16-9');
             playerContainer.classList.add(ratio === '4:3' ? 'ratio-4-3' : 'ratio-16-9');
@@ -808,7 +785,14 @@
 
         window.playEpisode = function(url, btnElement) {
             const videoPlayer = document.getElementById('main-video-player');
-            videoPlayer.src = url;
+            const playerContainer = document.querySelector('.video-player-container');
+            const post = allPosts.find(p => p.id === window.currentDetailPostId);
+
+            const ratio = post && post.videoRatio === '4:3' ? '4:3' : '16:9';
+            playerContainer.classList.remove('ratio-4-3', 'ratio-16-9');
+            playerContainer.classList.add(ratio === '4:3' ? 'ratio-4-3' : 'ratio-16-9');
+
+            videoPlayer.src = convertToEmbedUrl(url);
 
             document.querySelectorAll('.episode-btn').forEach(b => b.classList.remove('active-ep'));
             if(btnElement) btnElement.classList.add('active-ep');
@@ -819,6 +803,7 @@
             document.getElementById('main-app-content').style.display = 'block';
             const videoPlayer = document.getElementById('main-video-player');
             videoPlayer.src = "";
+            window.currentDetailPostId = null;
             fetchPosts();
         }
 
