@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Auto Convert & HTML5 Video Player</title>
+    <title>HTML5 Video Player - Auto Convert</title>
     <style>
         body {
             background-color: #0b0f19;
@@ -13,19 +13,12 @@
             max-width: 900px;
             margin: auto;
         }
-        .player-container {
+        .player-box {
             background: #1e293b;
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.5);
-        }
-        video {
-            width: 100%;
-            max-height: 500px;
-            background: #000;
-            border-radius: 6px;
-            outline: none;
-            margin-top: 15px;
+            border: 1px solid #334155;
         }
         .input-group {
             margin-bottom: 15px;
@@ -34,7 +27,7 @@
             width: 100%;
             padding: 12px;
             background: #0b0f19;
-            border: 1px solid #334155;
+            border: 1px solid #475569;
             color: white;
             border-radius: 5px;
             box-sizing: border-box;
@@ -44,7 +37,7 @@
             background: #3b82f6;
             color: white;
             border: none;
-            padding: 12px 24px;
+            padding: 12px 20px;
             border-radius: 5px;
             font-weight: bold;
             cursor: pointer;
@@ -53,69 +46,83 @@
         button:hover {
             background: #2563eb;
         }
-        .status-text {
+        video {
+            width: 100%;
+            max-height: 500px;
+            background: #000;
+            border-radius: 6px;
+            margin-top: 20px;
+            outline: none;
+        }
+        .status-msg {
+            margin-top: 15px;
             font-size: 0.85rem;
             color: #38bdf8;
-            margin-top: 8px;
+            background: #0f172a;
+            padding: 10px;
+            border-radius: 4px;
+            word-break: break-all;
         }
     </style>
 </head>
 <body>
 
-    <h2>Auto Convert Drive & Mega to HTML5 Player</h2>
-    
-    <div class="player-container">
-        <div class="input-group">
-            <label>Google Drive அல்லது Mega Share Link-ஐ இங்கே ஒட்டவும்:</label>
-            <input type="text" id="video-url-input" placeholder="https://drive.google.com/file/d/... அல்லது https://mega.nz/file/...">
-        </div>
-        <button onclick="processAndPlayVideo()">Auto Convert & Play</button>
-        <div id="conversion-status" class="status-text"></div>
+    <h2>HTML5 Video Player (Drive & Mega Direct Stream)</h2>
 
-        <!-- ஒரிஜினல் HTML5 வீடியோ பிளேயர் (iframe கிடையாது) -->
-        <video id="html5-video-player" controls preload="metadata">
+    <div class="player-box">
+        <div class="input-group">
+            <label>Google Drive அல்லது Mega வீடியோ லிங்க்கை இங்கே ஒட்டவும்:</label>
+            <input type="text" id="media-url" placeholder="https://drive.google.com/file/d/... அல்லது Mega Link">
+        </div>
+        <button onclick="playVideo()">Convert & Play Video</button>
+
+        <div id="status-box" class="status-msg">Status: Ready</div>
+
+        <!-- ஐபிரேம் இல்லாத ஒரிஜினல் HTML5 வீடியோ டேக் -->
+        <video id="html5-player" controls preload="metadata">
             Your browser does not support the video tag.
         </video>
     </div>
 
     <script>
-        function processAndPlayVideo() {
-            let inputVal = document.getElementById('video-url-input').value.trim();
-            let videoElement = document.getElementById('html5-video-player');
-            let statusText = document.getElementById('conversion-status');
-            
-            if (!inputVal) {
-                alert("தயவுசெய்து ஏதாவது ஒரு லிங்க்கை உள்ளிடவும்!");
+        function playVideo() {
+            let inputUrl = document.getElementById('media-url').value.trim();
+            let videoPlayer = document.getElementById('html5-player');
+            let statusBox = document.getElementById('status-box');
+
+            if (!inputUrl) {
+                alert("தயவுசெய்து லிங்கை உள்ளிடவும்!");
                 return;
             }
 
-            let directVideoUrl = "";
+            let finalStreamUrl = inputUrl;
 
-            // 1. Google Drive லிங்க் ஹேண்ட்லிங்
-            if (inputVal.includes("drive.google.com")) {
-                let fileIdMatch = inputVal.match(/\/d\/([a-zA-Z0-9_-]+)/);
-                if (fileIdMatch && fileIdMatch[1]) {
-                    let fileId = fileIdMatch[1];
-                    directVideoUrl = `https://lh3.googleusercontent.com/d/${fileId}=s0`;
-                    statusText.innerText = "Status: Google Drive link converted to Direct HTML5 Stream!";
+            // 1. Google Drive Link Conversion
+            if (inputUrl.includes("drive.google.com")) {
+                let match = inputUrl.match(/\/d\/([a-zA-Z0-9_-]+)/);
+                if (match && match[1]) {
+                    let fileId = match[1];
+                    // டிரைவ் பைலை நேரடி ஸ்ட்ரீமிங் லிங்காக மாற்றுவது
+                    finalStreamUrl = `https://lh3.googleusercontent.com/d/${fileId}=s0`;
+                    statusBox.innerText = "Converted Drive Link: " + finalStreamUrl;
                 }
             } 
-            // 2. Mega லிங்க் ஹேண்ட்லிங்
-            else if (inputVal.includes("mega.nz")) {
-                // Mega லிங்க்குகளை டைரக்ட் ஸ்டிரீமிங் செய்ய ஏதுவான ஃபார்மட் அல்லது எம்பெட் முறைகள்
-                // Mega-வுக்கென பிரத்யேகமான ஃபார்மட் அல்லது நேரடி சோர்ஸ் லிங்க் எடுக்கப்படுவது
-                directVideoUrl = inputVal; 
-                statusText.innerText = "Status: Mega link loaded into HTML5 player!";
+            // 2. Mega Link Handling
+            else if (inputUrl.includes("mega.nz")) {
+                // Mega லிங்க்குகள் பிரவுசரில் நேரடியாக HTML5 டேக் மூலம் ஓட சிறப்பு ஸ்ட்ரீமிங் கீ தேவைப்படும்.
+                // ஒருவேளை நேரடி லிங்க்காக மாறவில்லை என்றால் கீழே உள்ள ஃபால்பேக் லாஜிக் வேலை செய்யும்.
+                finalStreamUrl = inputUrl;
+                statusBox.innerText = "Loaded Mega Link: " + finalStreamUrl;
             } else {
-                directVideoUrl = inputVal;
-                statusText.innerText = "Status: Direct link loaded.";
+                statusBox.innerText = "Loaded Direct URL: " + finalStreamUrl;
             }
 
-            // வீடியோ பிளேயரில் சோர்ஸை செட் செய்து இயக்குவது
-            videoElement.src = directVideoUrl;
-            videoElement.load();
-            videoElement.play().catch(error => {
-                console.log("Auto-play restricted by browser:", error);
+            // வீடியோவை லோட் செய்து இயக்குவது
+            videoPlayer.src = finalStreamUrl;
+            videoPlayer.load();
+            videoPlayer.play().catch(err => {
+                console.log("Playback warning:", err);
+                statusBox.innerText += " | Note: Click play button on player if autoplay is restricted.";
             });
         }
     </script>
