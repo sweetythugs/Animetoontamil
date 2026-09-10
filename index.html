@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Auto Embed Video Player</title>
+    <title>Pure HTML5 Direct Video Player</title>
     <style>
         body {
             background-color: #0b0f19;
@@ -55,82 +55,74 @@
             border-radius: 4px;
             word-break: break-all;
         }
-        .iframe-container {
-            position: relative;
+        /* ஐபிரேம் கிடையாது - ஒரிஜினல் HTML5 வீடியோ பிளேயர் ஸ்டைல் */
+        video {
             width: 100%;
-            padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
-            height: 0;
-            margin-top: 20px;
+            max-height: 480px;
             background: #000;
             border-radius: 6px;
-            overflow: hidden;
-        }
-        .iframe-container iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border: none;
+            margin-top: 20px;
+            outline: none;
         }
     </style>
 </head>
 <body>
 
-    <h2>Auto Embed Video Player (Drive & Mega)</h2>
+    <h2>Pure HTML5 Video Player (No Iframe)</h2>
 
     <div class="player-box">
         <div class="input-group">
-            <label>Google Drive அல்லது Mega லிங்க்கை இங்கே ஒட்டவும்:</label>
-            <input type="text" id="media-url" placeholder="https://drive.google.com/file/d/... அல்லது Mega Link">
+            <label>Google Drive வீடியோ லிங்க்கை இங்கே ஒட்டவும்:</label>
+            <input type="text" id="media-url" placeholder="https://drive.google.com/file/d/.../view">
         </div>
-        <button onclick="playEmbeddedVideo()">Auto Convert & Play</button>
+        <button onclick="playPureHTML5Video()">Convert & Play in HTML5</button>
 
         <div id="status-box" class="status-msg">Status: Ready</div>
 
-        <div class="iframe-container" id="player-wrapper" style="display:none;">
-            <!-- ஆட்டோமேட்டிக்காக மாறக்கூடிய ஐபிரேம் ஃபிரேம் -->
-            <iframe id="video-iframe" src="" allowfullscreen></iframe>
-        </div>
+        <!-- ஐபிரேம் இல்லாத அசல் HTML5 வீடியோ டேக் -->
+        <video id="native-html5-player" controls preload="metadata">
+            Your browser does not support the video tag.
+        </video>
     </div>
 
     <script>
-        function playEmbeddedVideo() {
+        function playPureHTML5Video() {
             let inputUrl = document.getElementById('media-url').value.trim();
+            let videoElement = document.getElementById('native-html5-player');
             let statusBox = document.getElementById('status-box');
-            let playerWrapper = document.getElementById('player-wrapper');
-            let videoIframe = document.getElementById('video-iframe');
 
             if (!inputUrl) {
                 alert("தயவுசெய்து லிங்கை உள்ளிடவும்!");
                 return;
             }
 
-            let embedUrl = "";
+            let directStreamUrl = inputUrl;
 
-            // 1. Google Drive Link Conversion to Preview Embed
+            // Google Drive ஃபைல் ஐடியை மட்டும் தனiyாக பிரித்தெடுத்தல்
             if (inputUrl.includes("drive.google.com")) {
                 let match = inputUrl.match(/\/d\/([a-zA-Z0-9_-]+)/);
                 if (match && match[1]) {
                     let fileId = match[1];
-                    // கூகுள் டிரைவ் அதிகாரப்பூர்வ ப்ரிவ்யூ எம்பெட் லிங்க்
-                    embedUrl = `https://drive.google.com/file/d/${fileId}/preview`;
-                    statusBox.innerText = "Status: Converted Google Drive to Secure Embed Player!";
+                    
+                    // கூகுள் டிரைவ் வீடியோவை நேரடியாக டவுன்லோட்/ஸ்ட்ரீம் செய்யும் அதிகாரப்பூர்வ பைனரி லிங்க் ஃபார்மட்
+                    directStreamUrl = `https://docs.google.com/uc?export=download&id=${fileId}`;
+                    
+                    statusBox.innerText = "Converted to Direct Stream URL: " + directStreamUrl;
                 }
-            } 
-            // 2. Mega Link Handling
-            else if (inputUrl.includes("mega.nz")) {
-                // Mega லிங்க்குகளை எம்பெட் செய்யும் முறை
-                embedUrl = inputUrl;
-                statusBox.innerText = "Status: Loaded Mega Link!";
-            } else {
-                embedUrl = inputUrl;
-                statusBox.innerText = "Status: Loaded URL!";
             }
 
-            if (embedUrl) {
-                videoIframe.src = embedUrl;
-                playerWrapper.style.display = "block";
+            // வீடியோ பிளேயருக்கு சோர்ஸை மாற்றுவது
+            videoElement.pause();
+            videoElement.src = directStreamUrl;
+            videoElement.load();
+            
+            // பிளே செய்ய முயற்சிப்பது
+            let playPromise = videoElement.play();
+            if (playPromise !== undefined) {
+                playPromise.catch(error => {
+                    console.log("Autoplay blocked or format needs manual play click:", error);
+                    statusBox.innerText += " | Note: Click the play button on the video player.";
+                });
             }
         }
     </script>
