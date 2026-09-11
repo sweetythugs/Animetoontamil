@@ -202,7 +202,6 @@
             text-align: center;
         }
 
-        /* Google Drive & Mega Player Container */
         .video-player-wrap {
             width: 100%;
             max-width: 900px;
@@ -237,6 +236,44 @@
             background: #000;
         }
 
+        /* Mega Fallback Box inside Player Area */
+        .mega-fallback-box {
+            position: absolute;
+            inset: 0;
+            background: #111827;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            text-align: center;
+        }
+        .mega-fallback-box h3 {
+            color: #ef4444;
+            margin-bottom: 10px;
+        }
+        .mega-fallback-box p {
+            color: #94a3b8;
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+        }
+        .mega-watch-btn {
+            background: #ef4444;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+        }
+        .mega-watch-btn:hover {
+            opacity: 0.9;
+        }
+
         .player-fullscreen-btn {
             display: block;
             width: 100%;
@@ -248,28 +285,6 @@
             color: #fff;
             font-weight: bold;
             cursor: pointer;
-        }
-
-        .video-player-container:fullscreen {
-            width: 100vw;
-            height: 100vh;
-            max-width: none;
-            aspect-ratio: auto;
-            border: 0;
-            border-radius: 0;
-        }
-
-        .video-player-container:fullscreen iframe {
-            width: 100%;
-            height: 100%;
-        }
-
-        @media (max-width: 600px) {
-            .video-player-container {
-                border-radius: 0;
-                border-left: 0;
-                border-right: 0;
-            }
         }
 
         .episode-row {
@@ -382,11 +397,10 @@
                 <div id="video-player-container" class="video-player-container ratio-16-9">
                     <iframe id="main-video-player" src=""
                             allow="autoplay; fullscreen; picture-in-picture; encrypted-media"
-                            allowfullscreen
-                            webkitallowfullscreen
-                            mozallowfullscreen></iframe>
+                            allowfullscreen></iframe>
+                    <div id="mega-player-fallback" style="display:none;"></div>
                 </div>
-                <button class="player-fullscreen-btn" type="button" onclick="openPlayerFullscreen()">⛶ Fullscreen</button>
+                <button class="player-fullscreen-btn" id="fs-btn-element" type="button" onclick="openPlayerFullscreen()">⛶ Fullscreen</button>
             </div>
 
             <div class="admob-banner">
@@ -816,43 +830,58 @@
             grid.innerHTML = html;
         }
 
-        // Google Drive & Mega.nz Link to Embed URL Converter
-        window.convertToEmbedUrl = function(url) {
-            if (!url) return "";
+        // Handle link type (Google Drive vs Mega)
+        window.loadPlayerContent = function(url) {
+            const mainPlayer = document.getElementById('main-video-player');
+            const fallbackBox = document.getElementById('mega-player-fallback');
+            const fsBtn = document.getElementById('fs-btn-element');
+
+            if (!url) {
+                mainPlayer.style.display = 'none';
+                fallbackBox.style.display = 'none';
+                return;
+            }
+
             let trimmed = url.trim();
 
-            // Google Drive Link
-            if (trimmed.includes("drive.google.com")) {
-                let fileId = "";
-                let fileIdMatch = trimmed.match(/\/d\/([a-zA-Z0-9_-]+)/);
-                if (fileIdMatch && fileIdMatch[1]) {
-                    fileId = fileIdMatch[1];
-                } else {
-                    let idMatch = trimmed.match(/[?&]id=([a-zA-Z0-9_-]+)/);
-                    if (idMatch && idMatch[1]) {
-                        fileId = idMatch[1];
-                    }
-                }
-                if (fileId) {
-                    return `https://drive.google.com/file/d/${fileId}/preview`;
-                }
-            }
-
-            // Mega.nz Link
             if (trimmed.includes("mega.nz")) {
-                if (trimmed.includes("/embed/")) {
-                    return trimmed;
-                }
-                if (trimmed.includes("/file/")) {
-                    return trimmed.replace("/file/", "/embed/");
-                }
-                if (trimmed.includes("#!")) {
-                    return trimmed.replace("#!", "embed/#!");
-                }
-                return trimmed;
-            }
+                // Mega link cannot be embedded due to codec restriction, show direct watch screen
+                mainPlayer.style.display = 'none';
+                fsBtn.style.display = 'none';
+                fallbackBox.style.display = 'flex';
+                fallbackBox.innerHTML = `
+                    <div class="mega-fallback-box">
+                        <h3>⚠️ Mega Direct Play Required</h3>
+                        <p>Mega videos cannot be played inside website player due to browser codec restrictions.</p>
+                        <a href="${trimmed}" target="_blank" class="mega-watch-btn">▶ Watch / Open on MEGA</a>
+                    </div>
+                `;
+            } else {
+                // Google Drive or standard embed links
+                fallbackBox.style.display = 'none';
+                mainPlayer.style.display = 'block';
+                fsBtn.style.display = 'block';
 
-            return trimmed;
+                if (trimmed.includes("drive.google.com")) {
+                    let fileId = "";
+                    let fileIdMatch = trimmed.match(/\/d\/([a-zA-Z0-9_-]+)/);
+                    if (fileIdMatch && fileIdMatch[1]) {
+                        fileId = fileIdMatch[1];
+                    } else {
+                        let idMatch = trimmed.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+                        if (idMatch && idMatch[1]) {
+                            fileId = idMatch[1];
+                        }
+                    }
+                    if (fileId) {
+                        mainPlayer.src = `https://drive.google.com/file/d/${fileId}/preview`;
+                    } else {
+                        mainPlayer.src = trimmed;
+                    }
+                } else {
+                    mainPlayer.src = trimmed;
+                }
+            }
         }
 
         // Fullscreen Action
@@ -895,28 +924,26 @@
             const linksArray = linksRaw.split(/,|\n/).map(l => l.trim()).filter(l => l.length > 0);
 
             const linksContainer = document.getElementById('detail-links-container');
-            const mainPlayer = document.getElementById('main-video-player');
 
             let linksHtml = '';
             if (linksArray.length > 0) {
-                mainPlayer.src = convertToEmbedUrl(linksArray[0]);
+                loadPlayerContent(linksArray[0]);
 
                 linksArray.forEach((link, index) => {
-                    let embedUrl = convertToEmbedUrl(link);
                     let activeClass = index === 0 ? 'active-ep' : '';
                     let isMega = link.includes('mega.nz');
 
                     linksHtml += `
                         <div class="episode-row">
-                            <button class="episode-btn ${activeClass}" onclick="playEpisode('${embedUrl}', this)">
+                            <button class="episode-btn ${activeClass}" onclick="playEpisode('${link.replace(/'/g, "\\'")}', this)">
                                 ▶️ Episode / Part ${index + 1}
                             </button>
-                            ${isMega ? `<a href="${link}" target="_blank" class="external-link-btn" title="Open directly on Mega if error occurs">🔗 Open Mega</a>` : ''}
+                            ${isMega ? `<a href="${link}" target="_blank" class="external-link-btn" title="Open directly on Mega">🔗 Open Mega</a>` : ''}
                         </div>
                     `;
                 });
             } else {
-                mainPlayer.src = "";
+                loadPlayerContent("");
                 linksHtml = "<p style='color:#64748b; text-align:center;'>No video links available.</p>";
             }
             linksContainer.innerHTML = linksHtml;
@@ -926,10 +953,8 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        window.playEpisode = function(embedUrl, btnElement) {
-            const mainPlayer = document.getElementById('main-video-player');
-            mainPlayer.src = embedUrl;
-
+        window.playEpisode = function(url, btnElement) {
+            loadPlayerContent(url);
             document.querySelectorAll('.episode-btn').forEach(b => b.classList.remove('active-ep'));
             btnElement.classList.add('active-ep');
         }
