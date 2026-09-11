@@ -158,7 +158,6 @@
             color: white;
         }
         
-        /* Post Top Info Card */
         .post-top-info {
             display: flex;
             gap: 1.5rem;
@@ -187,7 +186,6 @@
             font-size: 0.95rem;
         }
 
-        /* AdMob Banner Box Styling */
         .admob-banner {
             width: 100%;
             max-width: 900px;
@@ -204,7 +202,6 @@
             text-align: center;
         }
 
-        /* Responsive Video Player */
         .video-player-container {
             position: relative;
             width: 100%;
@@ -212,9 +209,10 @@
             margin: 0 auto;
             aspect-ratio: 16 / 9;
             background: #000;
-            border-radius: 8px;
+            border-radius: 8px 8px 0 0;
             overflow: hidden;
             border: 1px solid #334155;
+            border-bottom: none;
         }
         .video-player-container.ratio-4-3 {
             aspect-ratio: 4 / 3;
@@ -231,13 +229,31 @@
             border: none;
             background: #000;
         }
-        .video-player-container iframe:fullscreen {
-            width: 100vw;
-            height: 100vh;
-            background: #000;
+
+        /* Fullscreen button styling below video */
+        .fullscreen-bar-btn {
+            display: block;
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto 15px auto;
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 0 0 8px 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: center;
+            box-sizing: border-box;
+            transition: background 0.2s;
         }
+        .fullscreen-bar-btn:hover {
+            background: #2563eb;
+        }
+
         @media (max-width: 600px) {
-            .video-player-container {
+            .video-player-container, .fullscreen-bar-btn {
                 width: 100%;
                 max-width: 100%;
                 border-radius: 0;
@@ -245,6 +261,7 @@
                 border-right: 0;
             }
         }
+
         .episode-btn {
             display: block;
             width: 100%;
@@ -323,7 +340,7 @@
                 <span>[ AdMob Banner Ad - Top ]</span>
             </div>
 
-            <!-- FULLSCREEN ENABLED VIDEO PLAYER -->
+            <!-- VIDEO PLAYER & FULLSCREEN BUTTON -->
             <div class="video-player-container">
                 <iframe id="main-video-player" src=""
                         allow="autoplay; fullscreen; picture-in-picture"
@@ -331,6 +348,7 @@
                         webkitallowfullscreen
                         mozallowfullscreen></iframe>
             </div>
+            <button class="fullscreen-bar-btn" onclick="triggerFullscreen()">⛶ Fullscreen</button>
 
             <div class="admob-banner">
                 <span>[ AdMob Banner Ad - Bottom ]</span>
@@ -712,12 +730,10 @@
             grid.innerHTML = html;
         }
 
-        // Google Drive மற்றும் MEGA லிங்க்குகளை ஆட்டோமேட்டிக்காக Embed வடிவத்திற்கு மாற்றுதல்[cite: 1]
         window.convertToEmbedUrl = function(url) {
             if (!url) return "";
             let trimmed = url.trim();
             
-            // Google Drive Link Conversion[cite: 1]
             if (trimmed.includes("drive.google.com")) {
                 let fileId = "";
                 let fileIdMatch = trimmed.match(/\/d\/([a-zA-Z0-9_-]+)/);
@@ -734,7 +750,6 @@
                 }
             }
             
-            // MEGA Link Conversion (mega.nz / mega.co.nz)[cite: 1]
             if (trimmed.includes("mega.nz") || trimmed.includes("mega.co.nz")) {
                 if (trimmed.includes("/embed/")) {
                     return trimmed;
@@ -806,6 +821,18 @@
 
             document.querySelectorAll('.episode-btn').forEach(b => b.classList.remove('active-ep'));
             if(btnElement) btnElement.classList.add('active-ep');
+        }
+
+        // Fullscreen trigger function for the button below video
+        window.triggerFullscreen = function() {
+            const playerContainer = document.querySelector('.video-player-container');
+            if (playerContainer.requestFullscreen) {
+                playerContainer.requestFullscreen();
+            } else if (playerContainer.webkitRequestFullscreen) {
+                playerContainer.webkitRequestFullscreen();
+            } else if (playerContainer.msRequestFullscreen) {
+                playerContainer.msRequestFullscreen();
+            }
         }
 
         window.goBack = function() {
