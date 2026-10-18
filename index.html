@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <meta name="theme-color" content="#080c16">
-<title>AnimeSalt - Ultimate Streaming App</title>
+<title>TamilCartoons - Anime Streaming App</title>
 <style>
 :root{--bg:#080c16;--surface:#121a2b;--surface2:#1b263b;--text:#f6f8ff;--muted:#a6b2c8;--accent:#50b7ff;--accent2:#8569ff;--border:#2a3750;--radius:16px;--green:#56df9b;--danger-color:#ef4444}
 *{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--text);font:16px/1.65 system-ui,-apple-system,'Segoe UI',Arial,sans-serif}body{min-height:100vh;padding-bottom:50px}
@@ -265,7 +265,7 @@ button:hover,.btn:hover{transform:translateY(-1px);background:#78c8ff}
             <button type="button" class="remove-season-btn" onclick="this.parentElement.remove()">Remove</button>
             <label style="font-size:11px;color:var(--muted);font-weight:bold;">Season Name</label>
             <input type="text" class="sb-season-name" value="${seasonName || 'Season ' + index}" placeholder="Season 1">
-            <label style="font-size:11px;color:var(--muted);font-weight:bold;margin-top:6px;display:block;">Paste Episode Links</label>
+            <label style="font-size:11px;color:var(--muted);font-weight:bold;margin-top:6px;display:block;">Paste Episode Links (Line by line or comma separated)</label>
             <textarea class="sb-season-links" placeholder="https://drive.google.com/...">${linksText}</textarea>
         `;
         container.appendChild(row);
@@ -299,6 +299,14 @@ button:hover,.btn:hover{transform:translateY(-1px);background:#78c8ff}
             }
         });
 
+        // Fallback: If no season rows added, create a default Season 1
+        if(seasonsData.length === 0) {
+            seasonsData.push({
+                season: "Season 1",
+                episodes: [{ title: "Episode 1", thumb: image, link: "" }]
+            });
+        }
+
         try {
             if (postId) {
                 await updateDoc(doc(db, "posts", postId), { title, category, genre, image, seasons: seasonsData });
@@ -326,11 +334,14 @@ button:hover,.btn:hover{transform:translateY(-1px);background:#78c8ff}
         
         const container = document.getElementById("seasonsBuilderContainer");
         container.innerHTML = "";
+        
         if(post.seasons && post.seasons.length > 0) {
             post.seasons.forEach(seas => {
                 let linksStr = seas.episodes.map(e => e.link).join("\n");
                 addSeasonBlock(seas.season, linksStr);
             });
+        } else if(post.links) {
+            addSeasonBlock("Season 1", post.links);
         } else {
             addSeasonBlock("Season 1", "");
         }
@@ -357,14 +368,27 @@ button:hover,.btn:hover{transform:translateY(-1px);background:#78c8ff}
         try {
             const querySnapshot = await getDocs(collection(db, "posts"));
             querySnapshot.forEach((docSnap) => {
-                allPosts.push({ id: docSnap.id, ...docSnap.data() });
+                let data = docSnap.data();
+                // Smart Fallback Fix: If seasons is missing, automatically wrap links or create a default season
+                if(!data.seasons) {
+                    if(data.links) {
+                        let linkArray = data.links.split(/[\n,]+/).map(l => l.trim()).filter(l => l.length > 0);
+                        data.seasons = [{
+                            season: "Season 1",
+                            episodes: linkArray.map((lnk, i) => ({ title: `Episode ${i+1}`, thumb: data.image, link: lnk }))
+                        }];
+                    } else {
+                        data.seasons = [{
+                            season: "Season 1",
+                            episodes: [{ title: "Episode 1", thumb: data.image, link: "" }]
+                        }];
+                    }
+                }
+                allPosts.push({ id: docSnap.id, ...data });
             });
-            console.log("Total Posts Fetched from Firebase:", allPosts.length, allPosts);
             renderCatalog();
         } catch (e) { 
             console.error("Error fetching posts: ", e); 
-            const catalog = document.getElementById("catalog");
-            if(catalog) catalog.innerHTML = `<p style='color:var(--danger-color);'>Error loading posts: ${e.message}</p>`;
         }
     }
 
@@ -373,21 +397,24 @@ button:hover,.btn:hover{transform:translateY(-1px);background:#78c8ff}
         if(!catalog) return;
         catalog.innerHTML = "";
         
-        // 100% Safe Display Logic: If 'All' is selected, show everything. If specific filter is selected, match or fallback to all posts so screen is never blank.
         let shown = allPosts.filter(x => {
-            if (currentFilter === "All") return true;
-            let g = (x.genre || "").trim().toLowerCase();
-            let c = (x.category || "").trim().toLowerCase();
-            let f = currentFilter.trim().toLowerCase();
-            return (g === f || c === f || g.includes(f) || c.includes(f));
+            let matchesFilter = true;
+            if (currentFilter !== "All") {
+                let g = (x.genre || "").trim().toLowerCase();
+                let c = (x.category || "").trim().toLowerCase();
+                let f = currentFilter.trim().toLowerCase();
+                matchesFilter = (g === f || c === f || g.includes(f) || c.includes(f));
+            }
+            let matchesSearch = x.title.toLowerCase().includes(q.toLowerCase());
+            return matchesFilter && matchesSearch;
         });
 
         if(shown.length === 0 && allPosts.length > 0) {
-            shown = allPosts; // Fallback to show all available posts if filter name mismatches
+            shown = allPosts; 
         }
         
         if(shown.length === 0) {
-            catalog.innerHTML = "<p style='color:var(--muted);'>No posts found in database. Please upload a post first!</p>";
+            catalog.innerHTML = "<p style='color:var(--muted);'>No posts found in database.</p>";
             document.getElementById("count").textContent = "0 titles";
             return;
         }
@@ -460,6 +487,12 @@ button:hover,.btn:hover{transform:translateY(-1px);background:#78c8ff}
         clearPlayer();
 
         currentItemSeasons = item.seasons || [];
+        if(currentItemSeasons.length === 0) {
+            currentItemSeasons = [{
+                season: "Season 1",
+                episodes: [{ title: "Episode 1", thumb: item.image, link: "" }]
+            }];
+        }
         populateSeasonDropdown();
         setTimeout(fitDesktopPlayer, 100);
     }
@@ -532,7 +565,7 @@ button:hover,.btn:hover{transform:translateY(-1px);background:#78c8ff}
             grid.appendChild(card);
         });
 
-        if(eps.length > 0) {
+        if(eps.length > 0 && eps[0].link) {
             currentRawLink = eps[0].link;
             document.getElementById("driveFrame").src = drivePreviewUrl(eps[0].link);
             document.getElementById("nowPlaying").textContent = `${seas.season} • Episode 1 (${eps[0].title})`;
