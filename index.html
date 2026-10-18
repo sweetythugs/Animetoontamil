@@ -6,36 +6,43 @@
     <title>AnimeSalt - Ultimate Streaming App</title>
     <style>
         :root {
-            --bg-color: #0b0f19;
-            --card-bg: #1e293b;
-            --text-color: #f8fafc;
-            --accent-color: #3b82f6;
+            --bg: #080c16;
+            --surface: #121a2b;
+            --surface2: #1b263b;
+            --text: #f6f8ff;
+            --muted: #a6b2c8;
+            --accent: #50b7ff;
+            --accent2: #8569ff;
+            --border: #2a3750;
+            --radius: 16px;
+            --green: #56df9b;
             --danger-color: #ef4444;
             --success-color: #10b981;
         }
         body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
+            background-color: var(--bg);
+            color: var(--text);
             font-family: Arial, sans-serif;
             margin: 0;
             padding-bottom: 70px;
         }
         header {
             padding: 1.2rem 2rem;
-            background: #0b0f19;
-            border-bottom: 1px solid #1e293b;
+            background: rgba(8,12,22,.96);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border);
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
         header h1 {
-            color: #38bdf8;
+            color: var(--accent);
             margin: 0;
             font-size: 1.8rem;
         }
         #user-status {
             font-size: 0.85rem;
-            color: #94a3b8;
+            color: var(--muted);
         }
         .container {
             padding: 1.5rem 2rem;
@@ -48,25 +55,27 @@
             overflow-x: auto;
             padding: 10px 0;
             margin-bottom: 2rem;
+            scrollbar-width: thin;
         }
         .az-btn {
-            background: #1e293b;
-            color: white;
-            border: 1px solid #334155;
+            background: var(--surface);
+            color: var(--text);
+            border: 1px solid var(--border);
             padding: 6px 12px;
-            border-radius: 4px;
+            border-radius: 6px;
             cursor: pointer;
             font-weight: bold;
         }
         .az-btn:hover, .az-btn.active {
-            background: var(--accent-color);
+            background: var(--accent);
+            color: #061321;
         }
         h2.section-title {
             font-size: 1.2rem;
-            border-left: 4px solid var(--accent-color);
+            border-left: 4px solid var(--accent);
             padding-left: 10px;
             margin: 1.5rem 0 1rem 0;
-            color: #38bdf8;
+            color: var(--accent);
         }
         .grid {
             display: grid;
@@ -75,8 +84,9 @@
             margin-bottom: 2rem;
         }
         .card {
-            background: var(--card-bg);
-            border-radius: 6px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
             overflow: hidden;
             padding: 10px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.3);
@@ -84,10 +94,11 @@
             flex-direction: column;
             justify-content: space-between;
             cursor: pointer;
-            transition: transform 0.2s;
+            transition: transform 0.2s, border-color 0.2s;
         }
         .card:hover {
             transform: translateY(-4px);
+            border-color: var(--accent);
         }
         .card img {
             width: 100%;
@@ -104,7 +115,7 @@
         }
         .meta-info {
             font-size: 0.75rem;
-            color: #94a3b8;
+            color: var(--muted);
             margin-bottom: 6px;
             display: flex;
             justify-content: space-between;
@@ -141,9 +152,9 @@
             display: block;
         }
         .back-btn {
-            background: #1e293b;
-            color: #38bdf8;
-            border: 1px solid #334155;
+            background: var(--surface2);
+            color: var(--accent);
+            border: 1px solid var(--border);
             padding: 8px 16px;
             border-radius: 6px;
             cursor: pointer;
@@ -154,20 +165,20 @@
             gap: 6px;
         }
         .back-btn:hover {
-            background: var(--accent-color);
-            color: white;
+            background: var(--accent);
+            color: #061321;
         }
         
         .post-top-info {
             display: flex;
             gap: 1.5rem;
-            background: var(--card-bg);
+            background: var(--surface);
             padding: 1.5rem;
             border-radius: 8px;
             margin-bottom: 1.5rem;
             align-items: center;
             flex-wrap: wrap;
-            border: 1px solid #334155;
+            border: 1px solid var(--border);
         }
         .post-top-info img {
             width: 140px;
@@ -177,140 +188,126 @@
         }
         .post-top-text h2 {
             margin: 0 0 10px 0;
-            color: #38bdf8;
+            color: var(--accent);
             font-size: 1.6rem;
         }
         .post-top-text p {
             margin: 5px 0;
-            color: #94a3b8;
+            color: var(--muted);
             font-size: 0.95rem;
         }
 
         .admob-banner {
             width: 100%;
-            max-width: 900px;
-            height: 90px;
+            max-width: 1100px;
+            height: 60px;
             background: #111827;
-            border: 1px dashed #334155;
+            border: 1px dashed var(--border);
             margin: 15px auto;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #64748b;
+            color: var(--muted);
             font-size: 0.85rem;
             border-radius: 6px;
             text-align: center;
         }
 
-        .video-player-container {
-            position: relative;
+        /* Integrated Sticky Player Styles from index-1 */
+        .player-scroller {
+            position: sticky;
+            top: 76px;
+            z-index: 25;
+            isolation: isolate;
             width: 100%;
-            max-width: 900px;
+            max-width: 1100px;
             margin: 0 auto;
-            aspect-ratio: 16 / 9;
-            background: #000;
-            border-radius: 8px 8px 0 0;
             overflow: hidden;
-            border: 1px solid #334155;
-            border-bottom: none;
+            border-radius: 12px;
+            background: #000;
+            box-shadow: 0 8px 28px #0008;
         }
-        .video-player-container.ratio-4-3 {
-            aspect-ratio: 4 / 3;
-        }
-        .video-player-container.ratio-16-9 {
-            aspect-ratio: 16 / 9;
-        }
-        .video-player-container iframe {
-            position: absolute;
-            inset: 0;
-            display: block;
+        .player-fixed {
             width: 100%;
-            height: 100%;
-            border: none;
             background: #000;
         }
-
-        /* Fullscreen button styling below video */
-        .fullscreen-bar-btn {
+        .player-titlebar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            padding: 11px 12px;
+            background: var(--surface);
+            color: var(--text);
+            font-size: 13px;
+            border-bottom: 1px solid var(--border);
+        }
+        .drive-frame {
             display: block;
             width: 100%;
-            max-width: 900px;
-            margin: 0 auto 15px auto;
-            background: var(--accent-color);
-            color: white;
-            border: none;
-            padding: 12px;
-            border-radius: 0 0 8px 8px;
-            font-size: 1rem;
-            font-weight: bold;
-            cursor: pointer;
-            text-align: center;
-            box-sizing: border-box;
-            transition: background 0.2s;
+            height: 619px;
+            border: 0;
+            background: #000;
         }
-        .fullscreen-bar-btn:hover {
-            background: #2563eb;
-        }
-
-        @media (max-width: 600px) {
-            .video-player-container, .fullscreen-bar-btn {
-                width: 100%;
-                max-width: 100%;
-                border-radius: 0;
-                border-left: 0;
-                border-right: 0;
-            }
+        .player-note {
+            font-size: 12px;
+            color: var(--muted);
+            margin: 10px auto;
+            max-width: 1100px;
+            line-height: 1.5;
         }
 
         .episode-btn {
             display: block;
             width: 100%;
-            max-width: 900px;
+            max-width: 1100px;
             margin: 10px auto;
-            background: var(--card-bg);
-            color: #38bdf8;
+            background: var(--surface);
+            color: var(--accent);
             padding: 12px 16px;
             border-radius: 6px;
             text-align: left;
-            border: 1px solid #334155;
+            border: 1px solid var(--border);
             font-weight: bold;
             cursor: pointer;
-            transition: background 0.2s;
+            transition: background 0.2s, color 0.2s;
             box-sizing: border-box;
         }
         .episode-btn:hover, .episode-btn.active-ep {
-            background: var(--accent-color);
-            color: white;
+            background: var(--accent);
+            color: #061321;
         }
         .bottom-nav {
             position: fixed;
             bottom: 0; left: 0; width: 100%;
-            background: #0b0f19;
-            border-top: 1px solid #1e293b;
+            background: rgba(8,12,22,.97);
+            border-top: 1px solid var(--border);
             display: flex;
             justify-content: space-around;
             padding: 10px 0;
             z-index: 1000;
+            overflow-x: auto;
         }
         .nav-item {
             background: none; border: none;
-            color: #94a3b8; cursor: pointer;
+            color: var(--muted); cursor: pointer;
             display: flex; flex-direction: column;
             align-items: center; font-size: 0.75rem; font-weight: bold;
+            white-space: nowrap;
         }
-        .nav-item.active, .nav-item:hover { color: #38bdf8; }
+        .nav-item.active, .nav-item:hover { color: var(--accent); }
         .section { display: none; }
         .section.active { display: block; }
         .search-box input {
             width: 100%; padding: 12px;
-            background: var(--card-bg); border: 1px solid #334155;
+            background: var(--surface); border: 1px solid var(--border);
             color: white; border-radius: 6px; font-size: 1rem;
         }
         .form-group { margin-bottom: 1rem; }
-        .form-group label { display: block; margin-bottom: 5px; }
+        .form-group label { display: block; margin-bottom: 5px; color: var(--muted); font-size: 0.85rem; font-weight: bold; }
         .form-group input, .form-group select, .form-group textarea {
             width: 100%; padding: 10px;
-            background: var(--card-bg); border: 1px solid #334155;
+            background: var(--surface); border: 1px solid var(--border);
             color: white; border-radius: 5px; box-sizing: border-box;
         }
     </style>
@@ -332,7 +329,7 @@
                 <div class="post-top-text">
                     <h2 id="detail-title"></h2>
                     <p id="detail-meta"></p>
-                    <p id="detail-views" style="color: #38bdf8; font-weight: bold;"></p>
+                    <p id="detail-views" style="color: var(--accent); font-weight: bold;"></p>
                 </div>
             </div>
 
@@ -340,28 +337,33 @@
                 <span>[ AdMob Banner Ad - Top ]</span>
             </div>
 
-            <!-- VIDEO PLAYER & FULLSCREEN BUTTON -->
-            <div class="video-player-container">
-                <iframe id="main-video-player" src=""
-                        allow="autoplay; fullscreen; picture-in-picture"
-                        allowfullscreen
-                        webkitallowfullscreen
-                        mozallowfullscreen></iframe>
+            <!-- INTEGRATED STICKY PLAYER FROM INDEX-1 -->
+            <div class="player-scroller">
+                <div class="player-fixed">
+                    <div class="player-titlebar">
+                        <strong id="playerHeading">TamilCartoons Player</strong>
+                        <span id="nowPlayingText">Select an episode</span>
+                    </div>
+                    <iframe id="main-video-player" class="drive-frame" src=""
+                            allow="autoplay; fullscreen; picture-in-picture"
+                            allowfullscreen
+                            referrerpolicy="strict-origin-when-cross-origin"></iframe>
+                </div>
             </div>
-            <button class="fullscreen-bar-btn" onclick="triggerFullscreen()">⛶ Fullscreen</button>
+            <div class="player-note">Desktop-style Google Drive/Mega player scales to fit and stays visible while scrolling the episodes list.</div>
 
             <div class="admob-banner">
                 <span>[ AdMob Banner Ad - Bottom ]</span>
             </div>
 
-            <h2 class="section-title" style="max-width: 900px; margin: 1.5rem auto 1rem auto;">Episodes List</h2>
-            <div id="detail-links-container"></div>
+            <h2 class="section-title" style="max-width: 1100px; margin: 1.5rem auto 1rem auto;">Episodes List</h2>
+            <div id="detail-links-container" style="max-width: 1100px; margin: 0 auto;"></div>
         </div>
 
         <!-- MAIN APP SECTIONS -->
         <div id="main-app-content">
             <div id="home" class="section active">
-                <div style="font-size: 0.85rem; color: #94a3b8; margin-bottom: 5px;">NAVIGATE A TO Z</div>
+                <div style="font-size: 0.85rem; color: var(--muted); margin-bottom: 5px;">NAVIGATE A TO Z</div>
                 <div class="az-bar" id="az-buttons">
                     <button class="az-btn active" onclick="filterByAZ('', this)">#</button>
                     <button class="az-btn" onclick="filterByAZ('A', this)">A</button>
@@ -409,7 +411,7 @@
 
             <div id="upload" class="section">
                 <h2 class="section-title" id="form-heading">Upload Post</h2>
-                <div id="upload-form-container" style="display:none;">
+                <div id="upload-form-container" style="display:none; max-width: 800px;">
                     <input type="hidden" id="edit-post-id" value="">
                     
                     <div class="form-group">
@@ -443,16 +445,8 @@
                         <textarea id="post-links" rows="6" placeholder="https://drive.google.com/..., https://mega.nz/..."></textarea>
                     </div>
 
-                    <div class="form-group">
-                        <label>Video Format</label>
-                        <select id="post-video-ratio">
-                            <option value="16:9">Widescreen (16:9)</option>
-                            <option value="4:3">Classic (4:3)</option>
-                        </select>
-                    </div>
-
                     <div style="display: flex; gap: 10px;">
-                        <button id="submit-btn" onclick="saveUserPost()" style="background:var(--accent-color); color:white; border:none; padding:10px 20px; border-radius:5px; font-weight:bold; cursor:pointer; flex: 1;">Publish</button>
+                        <button id="submit-btn" onclick="saveUserPost()" style="background:var(--accent); color:#061321; border:none; padding:10px 20px; border-radius:5px; font-weight:bold; cursor:pointer; flex: 1;">Publish</button>
                         <button id="cancel-edit-btn" onclick="resetForm()" style="background:var(--danger-color); color:white; border:none; padding:10px 20px; border-radius:5px; font-weight:bold; cursor:pointer; display:none;">Cancel</button>
                     </div>
                 </div>
@@ -606,14 +600,12 @@
                     }
 
                     await updateDoc(doc(db, "posts", postId), {
-                        title, category, genre, image, links: updatedLinks,
-                        videoRatio: document.getElementById('post-video-ratio').value
+                        title, category, genre, image, links: updatedLinks
                     });
                     alert("Post Updated & New Episodes Added Successfully!");
                 } else {
                     await addDoc(collection(db, "posts"), {
                         title, category, genre, image, links: newLinksInput,
-                        videoRatio: document.getElementById('post-video-ratio').value,
                         views: 0,
                         userEmail: currentUser.email,
                         createdAt: new Date()
@@ -645,7 +637,6 @@
             document.getElementById('post-genre').value = post.genre || 'Anime';
             document.getElementById('post-image').value = post.image;
             document.getElementById('post-links').value = "";
-            document.getElementById('post-video-ratio').value = post.videoRatio || '16:9';
 
             document.getElementById('form-heading').innerText = "Edit / Add Episodes";
             document.getElementById('submit-btn').innerText = "Update & Add Episodes";
@@ -659,7 +650,6 @@
             document.getElementById('post-title').value = '';
             document.getElementById('post-image').value = '';
             document.getElementById('post-links').value = '';
-            document.getElementById('post-video-ratio').value = '16:9';
             document.getElementById('form-heading').innerText = "Upload Post";
             document.getElementById('submit-btn').innerText = "Publish";
             document.getElementById('cancel-edit-btn').style.display = "none";
@@ -698,7 +688,7 @@
             if (!grid) return;
             
             if (posts.length === 0) {
-                grid.innerHTML = "<p style='color:#64748b;'>No items available.</p>";
+                grid.innerHTML = "<p style='color:var(--muted);'>No items available.</p>";
                 return;
             }
 
@@ -784,15 +774,12 @@
 
             const container = document.getElementById('detail-links-container');
             const videoPlayer = document.getElementById('main-video-player');
-            const playerContainer = document.querySelector('.video-player-container');
-
-            const ratio = post.videoRatio === '4:3' ? '4:3' : '16:9';
-            playerContainer.classList.remove('ratio-4-3', 'ratio-16-9');
-            playerContainer.classList.add(ratio === '4:3' ? 'ratio-4-3' : 'ratio-16-9');
+            const nowPlayingText = document.getElementById('nowPlayingText');
 
             if (!post.links || post.links.trim() === "") {
-                container.innerHTML = "<p style='color: #94a3b8; text-align: center;'>No video links added yet.</p>";
+                container.innerHTML = "<p style='color: var(--muted); text-align: center;'>No video links added yet.</p>";
                 videoPlayer.src = "";
+                nowPlayingText.innerText = "No video available";
             } else {
                 let linkArray = post.links.split(/[\n,]+/);
                 let validLinks = linkArray.map(l => l.trim()).filter(l => l.length > 0);
@@ -800,13 +787,14 @@
                 let linksHtml = '';
                 validLinks.forEach((link, index) => {
                     let embedUrl = window.convertToEmbedUrl(link);
-                    linksHtml += `<button class="episode-btn" onclick="playEpisode('${embedUrl}', this)">▶ Episode ${index + 1}</button>`;
+                    linksHtml += `<button class="episode-btn" onclick="playEpisode('${embedUrl}', 'Episode ${index + 1}', this)">▶ Episode ${index + 1}</button>`;
                 });
                 container.innerHTML = linksHtml;
 
                 if (validLinks.length > 0) {
                     let firstEmbedUrl = window.convertToEmbedUrl(validLinks[0]);
                     videoPlayer.src = firstEmbedUrl;
+                    nowPlayingText.innerText = "Episode 1";
                 }
             }
 
@@ -815,24 +803,13 @@
             window.scrollTo(0, 0);
         }
 
-        window.playEpisode = function(url, btnElement) {
+        window.playEpisode = function(url, titleText, btnElement) {
             const videoPlayer = document.getElementById('main-video-player');
             videoPlayer.src = url;
+            document.getElementById('nowPlayingText').innerText = titleText;
 
             document.querySelectorAll('.episode-btn').forEach(b => b.classList.remove('active-ep'));
             if(btnElement) btnElement.classList.add('active-ep');
-        }
-
-        // Fullscreen trigger function for the button below video
-        window.triggerFullscreen = function() {
-            const playerContainer = document.querySelector('.video-player-container');
-            if (playerContainer.requestFullscreen) {
-                playerContainer.requestFullscreen();
-            } else if (playerContainer.webkitRequestFullscreen) {
-                playerContainer.webkitRequestFullscreen();
-            } else if (playerContainer.msRequestFullscreen) {
-                playerContainer.msRequestFullscreen();
-            }
         }
 
         window.goBack = function() {
