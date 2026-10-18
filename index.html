@@ -43,7 +43,7 @@ button:hover,.btn:hover{transform:translateY(-1px);background:#78c8ff}
 .player-toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}.secondary{background:var(--surface2);border:1px solid var(--border);color:#e8f0ff}
 .secondary:hover{background:#293954;color:#fff}
 
-/* Season & Thumbnail Episode Cards Styling based on Video */
+/* Season & Thumbnail Episode Cards Styling */
 .season-selector-bar{display:flex;align-items:center;justify-content:space-between;margin:15px 0;background:var(--surface2);padding:10px 14px;border-radius:12px;border:1px solid var(--border);flex-wrap:wrap;gap:10px}
 .season-selector-bar select{background:#0b1220;border:1px solid var(--border);color:#fff;padding:8px 12px;border-radius:8px;font-weight:bold;outline:none}
 .episode-thumb-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px;margin-top:15px}
@@ -55,12 +55,17 @@ button:hover,.btn:hover{transform:translateY(-1px);background:#78c8ff}
 .ep-title{font-size:13px;font-weight:bold;color:#f6f8ff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ep-card.active{outline:2px solid var(--accent)}
 
-.admin-shell{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:20px;max-width:800px;margin:auto}
+/* Admin Season Builder Styles */
+.season-builder-row{background:#0b1220;border:1px solid var(--border);padding:12px;border-radius:10px;margin-bottom:10px;position:relative}
+.season-builder-row input{margin-bottom:8px}
+.season-builder-row textarea{width:100%;background:#121a2b;border:1px solid var(--border);color:#fff;padding:8px;border-radius:8px;min-height:70px;outline:none}
+.remove-season-btn{background:var(--danger-color);color:#fff;border:none;padding:4px 8px;border-radius:6px;cursor:pointer;font-size:11px;float:right}
+
+.admin-shell{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:20px;max-width:850px;margin:auto}
 .admin-grid{display:grid;grid-template-columns:1fr;gap:12px}
 @media(min-width:600px){.admin-grid{grid-template-columns:repeat(2,1fr)}}
 .admin-grid label{display:block;font-size:12px;color:var(--muted);font-weight:800;margin-bottom:4px}
 .admin-grid input,.admin-grid select,.admin-grid textarea{width:100%;background:#0b1220;border:1px solid #34415b;border-radius:10px;padding:11px;color:#fff;outline:none}
-.admin-grid textarea{min-height:100px;resize:vertical}
 .admin-actions{display:flex;gap:10px;margin-top:15px}
 
 .bottom-nav{position:fixed;bottom:0;left:0;width:100%;background:rgba(8,12,22,.97);border-top:1px solid var(--border);display:flex;justify-content:space-around;padding:10px 0;z-index:1000}
@@ -82,7 +87,7 @@ button:hover,.btn:hover{transform:translateY(-1px);background:#78c8ff}
 <main class="wrap">
   <!-- HOME SECTION -->
   <section id="home">
-    <div class="hero"><div class="eyebrow">Anime • Cartoons • Episodes</div><h1>Your anime world, all in one place.</h1><p>Browse anime and cartoons, select seasons, and play episodes with thumbnail cards.</p></div>
+    <div class="hero"><div class="eyebrow">Anime • Cartoons • Episodes</div><h1>Your anime world, all in one place.</h1><p>Browse anime and cartoons, select seasons, and play episodes seamlessly.</p></div>
     <div class="ad">AD SPACE — TOP BANNER (demo placeholder)</div>
     <div class="section-title"><h2>🔥 Trending Anime & Cartoons</h2><small id="count">0 titles</small></div>
     <div class="filters">
@@ -95,7 +100,7 @@ button:hover,.btn:hover{transform:translateY(-1px);background:#78c8ff}
     <div class="ad">AD SPACE — BOTTOM BANNER (demo placeholder)</div>
   </section>
 
-  <!-- UPLOAD / ADMIN SECTION -->
+  <!-- UPLOAD / ADMIN SECTION WITH DYNAMIC SEASON BUILDER -->
   <section id="upload" class="section hidden">
     <div class="admin-shell">
       <h2 id="form-heading" style="margin-top:0">Upload / Edit Post</h2>
@@ -111,28 +116,18 @@ button:hover,.btn:hover{transform:translateY(-1px);background:#78c8ff}
           <select id="post-genre"><option value="Anime">Anime</option><option value="Cartoon">Cartoon</option><option value="Tamil Dubbed">Tamil Dubbed</option></select>
         </div>
         <div><label>Poster Image URL *</label><input id="post-image" placeholder="https://..."></div>
-        <div style="grid-column:1/-1">
-          <label>Seasons & Episodes JSON (மாவை நீங்கள் சீசன் 3, சீசன் 4 என எப்போது வேண்டுமானாலும் இதில் அப்டேட் செய்யலாம்)</label>
-          <textarea id="post-seasons-json" placeholder='[
-  {
-    "season": "Season 1",
-    "episodes": [
-      {"title": "And Then There Were 10", "thumb": "https://image.url/ep1.jpg", "link": "https://drive.google.com/..."},
-      {"title": "Washington B.C.", "thumb": "https://image.url/ep2.jpg", "link": "https://drive.google.com/..."}
-    ]
-  },
-  {
-    "season": "Season 2",
-    "episodes": [
-      {"title": "The Kraken", "thumb": "https://image.url/s2e1.jpg", "link": "https://drive.google.com/..."}
-    ]
-  }
-]'></textarea>
-          <small style="color:var(--muted);display:block;margin-top:5px;">மேலே உள்ள வடிவில் JSON பார்மட்டில் சீசன்கள் மற்றும் எபிசோடுகளை எழுதவும். சீசன் 3 வந்தால் கீழ்க்கண்டவாறு தொடர்ந்து சேர்த்துக்கொள்ளலாம்.</small>
-        </div>
       </div>
+
+      <div style="margin-top:20px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <label style="font-size:13px;color:var(--muted);font-weight:bold;">Seasons & Episode Links Setup</label>
+          <button type="button" onclick="addSeasonBlock()" style="background:var(--green);color:#061321;padding:6px 12px;font-size:12px;">+ Add Season Button</button>
+        </div>
+        <div id="seasonsBuilderContainer"></div>
+      </div>
+
       <div class="admin-actions">
-        <button id="submit-btn" onclick="saveUserPost()">Publish</button>
+        <button id="submit-btn" onclick="saveUserPost()">Publish Post</button>
         <button class="secondary" id="cancel-edit-btn" onclick="resetForm()" style="display:none;">Cancel</button>
       </div>
       <p id="upload-warning" style="color:var(--danger-color);margin-top:10px;font-weight:bold;">Please login with Google to upload posts.</p>
@@ -173,7 +168,7 @@ button:hover,.btn:hover{transform:translateY(-1px);background:#78c8ff}
       <div class="player-toolbar"><button class="secondary" onclick="clearPlayer()">Clear Player</button><button class="secondary" onclick="copyCurrentLink()">Copy Current Link</button></div>
       <div class="ad">AD SPACE — PLAYER BOTTOM (demo placeholder)</div>
       
-      <!-- CHOOSE SEASON & THUMBNAIL EPISODES BAR (As shown in video) -->
+      <!-- CHOOSE SEASON & THUMBNAIL EPISODES BAR -->
       <div class="season-selector-bar">
         <div>
           <span style="font-size:11px;color:var(--muted);text-transform:uppercase;font-weight:bold;display:block;">Choose Season</span>
@@ -261,6 +256,22 @@ button:hover,.btn:hover{transform:translateY(-1px);background:#78c8ff}
         fetchPosts();
     }
 
+    // Dynamic Season Builder in Admin Form
+    window.addSeasonBlock = function(seasonName = "", linksText = "") {
+        const container = document.getElementById("seasonsBuilderContainer");
+        const index = container.children.length + 1;
+        const row = document.createElement("div");
+        row.className = "season-builder-row";
+        row.innerHTML = `
+            <button type="button" class="remove-season-btn" onclick="this.parentElement.remove()">Remove</button>
+            <label style="font-size:11px;color:var(--muted);font-weight:bold;">Season Name</label>
+            <input type="text" class="sb-season-name" value="${seasonName || 'Season ' + index}" placeholder="Season 1">
+            <label style="font-size:11px;color:var(--muted);font-weight:bold;margin-top:6px;display:block;">Paste Episode Links (ஒவ்வொரு லிங்க்கும் ஒவ்வொரு லைனில் அல்லது கமா போட்டு)</label>
+            <textarea class="sb-season-links" placeholder="https://drive.google.com/...&#10;https://drive.google.com/...">${linksText}</textarea>
+        `;
+        container.appendChild(row);
+    }
+
     window.saveUserPost = async function() {
         if (!currentUser) { alert("Please login first to publish posts!"); return; }
         const postId = document.getElementById('edit-post-id').value;
@@ -268,24 +279,32 @@ button:hover,.btn:hover{transform:translateY(-1px);background:#78c8ff}
         const category = document.getElementById('post-category').value;
         const genre = document.getElementById('post-genre').value;
         const image = document.getElementById('post-image').value.trim();
-        const seasonsJsonStr = document.getElementById('post-seasons-json').value.trim();
 
         if(!title || !image) { alert("Please fill title and image URL!"); return; }
 
+        // Gather data from dynamic season builder rows
         let seasonsData = [];
-        try {
-            if(seasonsJsonStr) {
-                seasonsData = JSON.parse(seasonsJsonStr);
+        const rows = document.querySelectorAll(".season-builder-row");
+        rows.forEach(row => {
+            let sName = row.querySelector(".sb-season-name").value.trim() || "Season 1";
+            let rawLinks = row.querySelector(".sb-season-links").value.trim();
+            if(rawLinks) {
+                let linkArray = rawLinks.split(/[\n,]+/).map(l => l.trim()).filter(l => l.length > 0);
+                let eps = linkArray.map((lnk, idx) => ({
+                    title: `Episode ${idx + 1}`,
+                    thumb: image, // uses main poster as default thumbnail if not specified
+                    link: lnk
+                }));
+                if(eps.length > 0) {
+                    seasonsData.push({ season: sName, episodes: eps });
+                }
             }
-        } catch(e) {
-            alert("Invalid JSON format in Seasons data! Please check your brackets and commas.");
-            return;
-        }
+        });
 
         try {
             if (postId) {
                 await updateDoc(doc(db, "posts", postId), { title, category, genre, image, seasons: seasonsData });
-                alert("Post Updated Successfully with new seasons!");
+                alert("Post Updated Successfully!");
             } else {
                 await addDoc(collection(db, "posts"), { title, category, genre, image, seasons: seasonsData, views: 0, userEmail: currentUser.email, createdAt: new Date() });
                 alert("Post Published Successfully!");
@@ -306,8 +325,20 @@ button:hover,.btn:hover{transform:translateY(-1px);background:#78c8ff}
         document.getElementById('post-category').value = post.category || 'Series';
         document.getElementById('post-genre').value = post.genre || 'Anime';
         document.getElementById('post-image').value = post.image;
-        document.getElementById('post-seasons-json').value = post.seasons ? JSON.stringify(post.seasons, null, 2) : '';
-        document.getElementById('form-heading').innerText = "Edit Post (Add/Update Seasons)";
+        
+        // Load seasons into builder
+        const container = document.getElementById("seasonsBuilderContainer");
+        container.innerHTML = "";
+        if(post.seasons && post.seasons.length > 0) {
+            post.seasons.forEach(seas => {
+                let linksStr = seas.episodes.map(e => e.link).join("\n");
+                addSeasonBlock(seas.season, linksStr);
+            });
+        } else {
+            addSeasonBlock("Season 1", "");
+        }
+
+        document.getElementById('form-heading').innerText = "Edit Post";
         document.getElementById('submit-btn').innerText = "Update Post";
         document.getElementById('cancel-edit-btn').style.display = "block";
         showSection('upload');
@@ -317,9 +348,10 @@ button:hover,.btn:hover{transform:translateY(-1px);background:#78c8ff}
         document.getElementById('edit-post-id').value = '';
         document.getElementById('post-title').value = '';
         document.getElementById('post-image').value = '';
-        document.getElementById('post-seasons-json').value = '';
+        document.getElementById('seasonsBuilderContainer').innerHTML = '';
+        addSeasonBlock("Season 1", "");
         document.getElementById('form-heading').innerText = "Upload Post";
-        document.getElementById('submit-btn').innerText = "Publish";
+        document.getElementById('submit-btn').innerText = "Publish Post";
         document.getElementById('cancel-edit-btn').style.display = "none";
     }
 
@@ -396,6 +428,9 @@ button:hover,.btn:hover{transform:translateY(-1px);background:#78c8ff}
     window.showSection = function(sectionId) {
         document.querySelectorAll('main > section').forEach(s => s.classList.add('hidden'));
         document.getElementById(sectionId).classList.remove('hidden');
+        if(sectionId === 'upload' && document.getElementById('seasonsBuilderContainer').children.length === 0) {
+            addSeasonBlock("Season 1", "");
+        }
         window.scrollTo(0,0);
     }
 
@@ -488,7 +523,6 @@ button:hover,.btn:hover{transform:translateY(-1px);background:#78c8ff}
             grid.appendChild(card);
         });
 
-        // Play first episode of selected season by default
         if(eps.length > 0) {
             currentRawLink = eps[0].link;
             document.getElementById("driveFrame").src = drivePreviewUrl(eps[0].link);
