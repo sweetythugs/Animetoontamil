@@ -35,16 +35,25 @@ button:hover,.btn:hover{transform:translateY(-1px);background:#78c8ff}
 /* Desktop Sticky Player Styles */
 .player-scroller{width:100%;overflow:hidden;border-radius:12px;background:#000;position:relative}
 .player-fixed{width:1100px;max-width:none;background:#000;transform-origin:top left}
-.player-titlebar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 12px;background:#121a2b;width:1100px;color:#e5edfc;font-size:13px;border-bottom:1px solid var(--border)}
+.player-titlebar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 12px;background:#111827;width:1100px;color:#dfe7f7;font-size:13px;border-bottom:1px solid var(--border)}
 .drive-frame{display:block;width:1100px;height:619px;border:0;background:#000}
 .player-note{font-size:12px;color:#9eabc4;margin:10px 0 14px;line-height:1.5}
 
 .link-form{display:grid;grid-template-columns:1fr auto;gap:8px;margin:12px 0}.link-form input{min-width:0;background:#0b1220;border:1px solid #34415b;border-radius:10px;padding:11px;color:#fff;outline:none}
-.episode-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(145px,1fr));gap:12px}.episode{background:#eaf5ff;color:#102033;border-radius:10px;border:1px solid #b9dcf7;padding:12px 14px;text-align:left;cursor:pointer}
-.episode strong{display:block;font-size:12px}.episode span{display:block;color:#36516c;font-size:10px;margin-top:5px}
-.episode.active{outline:2px solid var(--accent);background:#c9eaff}
 .player-toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}.secondary{background:var(--surface2);border:1px solid var(--border);color:#e8f0ff}
 .secondary:hover{background:#293954;color:#fff}
+
+/* Season & Thumbnail Episode Cards Styling based on Video */
+.season-selector-bar{display:flex;align-items:center;justify-content:space-between;margin:15px 0;background:var(--surface2);padding:10px 14px;border-radius:12px;border:1px solid var(--border);flex-wrap:wrap;gap:10px}
+.season-selector-bar select{background:#0b1220;border:1px solid var(--border);color:#fff;padding:8px 12px;border-radius:8px;font-weight:bold;outline:none}
+.episode-thumb-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px;margin-top:15px}
+.ep-card{background:#0e1626;border:1px solid var(--border);border-radius:10px;overflow:hidden;cursor:pointer;transition:transform .15s,border-color .15s}
+.ep-card:hover{transform:translateY(-3px);border-color:var(--accent)}
+.ep-thumb{width:100%;aspect-ratio:16/9;object-fit:cover;background:#1b263b;display:block}
+.ep-info{padding:8px}
+.ep-badge{display:inline-block;background:var(--accent);color:#061321;font-size:10px;font-weight:900;padding:2px 6px;border-radius:4px;margin-bottom:4px}
+.ep-title{font-size:13px;font-weight:bold;color:#f6f8ff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ep-card.active{outline:2px solid var(--accent)}
 
 .admin-shell{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:20px;max-width:800px;margin:auto}
 .admin-grid{display:grid;grid-template-columns:1fr;gap:12px}
@@ -59,7 +68,7 @@ button:hover,.btn:hover{transform:translateY(-1px);background:#78c8ff}
 .nav-item.active,.nav-item:hover{color:var(--accent)}
 
 .foot{color:#8290aa;text-align:center;font-size:12px;padding:25px 10px;border-top:1px solid var(--border);margin-top:25px}
-@media(max-width:600px){header{padding:10px}.wrap{padding:12px}.hero{padding:23px 18px;min-height:220px;border-radius:18px}.hero h1{font-size:27px}.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}.detail-head{padding:13px;gap:12px}.detail-poster{width:100px;height:140px}.detail-copy h2{font-size:19px}.player-area{padding:0 9px 14px}.episode-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}}
+@media(max-width:600px){header{padding:10px}.wrap{padding:12px}.hero{padding:23px 18px;min-height:220px;border-radius:18px}.hero h1{font-size:27px}.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}.detail-head{padding:13px;gap:12px}.detail-poster{width:100px;height:140px}.detail-copy h2{font-size:19px}.player-area{padding:0 9px 14px}.episode-thumb-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}}
 </style>
 </head>
 <body>
@@ -73,7 +82,7 @@ button:hover,.btn:hover{transform:translateY(-1px);background:#78c8ff}
 <main class="wrap">
   <!-- HOME SECTION -->
   <section id="home">
-    <div class="hero"><div class="eyebrow">Anime • Cartoons • Episodes</div><h1>Your anime world, all in one place.</h1><p>Browse anime and cartoons, select seasons, and play episodes with their saved video links.</p></div>
+    <div class="hero"><div class="eyebrow">Anime • Cartoons • Episodes</div><h1>Your anime world, all in one place.</h1><p>Browse anime and cartoons, select seasons, and play episodes with thumbnail cards.</p></div>
     <div class="ad">AD SPACE — TOP BANNER (demo placeholder)</div>
     <div class="section-title"><h2>🔥 Trending Anime & Cartoons</h2><small id="count">0 titles</small></div>
     <div class="filters">
@@ -89,10 +98,10 @@ button:hover,.btn:hover{transform:translateY(-1px);background:#78c8ff}
   <!-- UPLOAD / ADMIN SECTION -->
   <section id="upload" class="section hidden">
     <div class="admin-shell">
-      <h2 id="form-heading" style="margin-top:0">Upload Post</h2>
+      <h2 id="form-heading" style="margin-top:0">Upload / Edit Post</h2>
       <input type="hidden" id="edit-post-id" value="">
       <div class="admin-grid">
-        <div><label>Title *</label><input id="post-title" placeholder="Naruto Shippuden"></div>
+        <div><label>Title *</label><input id="post-title" placeholder="Ben 10"></div>
         <div>
           <label>Media Type</label>
           <select id="post-category"><option value="Series">Series</option><option value="Movies">Movies</option></select>
@@ -101,10 +110,25 @@ button:hover,.btn:hover{transform:translateY(-1px);background:#78c8ff}
           <label>Genre / Type</label>
           <select id="post-genre"><option value="Anime">Anime</option><option value="Cartoon">Cartoon</option><option value="Tamil Dubbed">Tamil Dubbed</option></select>
         </div>
-        <div><label>Image URL *</label><input id="post-image" placeholder="https://..."></div>
+        <div><label>Poster Image URL *</label><input id="post-image" placeholder="https://..."></div>
         <div style="grid-column:1/-1">
-          <label>Video Links (Google Drive / MEGA links separated by commas or lines)</label>
-          <textarea id="post-links" placeholder="https://drive.google.com/..."></textarea>
+          <label>Seasons & Episodes JSON (மாவை நீங்கள் சீசன் 3, சீசன் 4 என எப்போது வேண்டுமானாலும் இதில் அப்டேட் செய்யலாம்)</label>
+          <textarea id="post-seasons-json" placeholder='[
+  {
+    "season": "Season 1",
+    "episodes": [
+      {"title": "And Then There Were 10", "thumb": "https://image.url/ep1.jpg", "link": "https://drive.google.com/..."},
+      {"title": "Washington B.C.", "thumb": "https://image.url/ep2.jpg", "link": "https://drive.google.com/..."}
+    ]
+  },
+  {
+    "season": "Season 2",
+    "episodes": [
+      {"title": "The Kraken", "thumb": "https://image.url/s2e1.jpg", "link": "https://drive.google.com/..."}
+    ]
+  }
+]'></textarea>
+          <small style="color:var(--muted);display:block;margin-top:5px;">மேலே உள்ள வடிவில் JSON பார்மட்டில் சீசன்கள் மற்றும் எபிசோடுகளை எழுதவும். சீசன் 3 வந்தால் கீழ்க்கண்டவாறு தொடர்ந்து சேர்த்துக்கொள்ளலாம்.</small>
         </div>
       </div>
       <div class="admin-actions">
@@ -132,7 +156,7 @@ button:hover,.btn:hover{transform:translateY(-1px);background:#78c8ff}
       <div class="ad">AD SPACE — PLAYER TOP (demo placeholder)</div>
       <div class="section-title"><h2 id="episodePageTitle">▶ Video Player</h2><small id="nowPlaying">Select an episode</small></div>
       
-      <!-- Desktop Sticky Player Container -->
+      <!-- Desktop Sticky Player Container with Titlebar Display -->
       <div class="player-scroller" id="playerScroller">
         <div class="player-fixed" id="playerFixed">
           <div class="player-titlebar">
@@ -149,8 +173,16 @@ button:hover,.btn:hover{transform:translateY(-1px);background:#78c8ff}
       <div class="player-toolbar"><button class="secondary" onclick="clearPlayer()">Clear Player</button><button class="secondary" onclick="copyCurrentLink()">Copy Current Link</button></div>
       <div class="ad">AD SPACE — PLAYER BOTTOM (demo placeholder)</div>
       
-      <div class="section-title"><h2>📚 Episodes List</h2><small id="episodeCount">0 episodes</small></div>
-      <div id="episodes" class="episode-grid"></div>
+      <!-- CHOOSE SEASON & THUMBNAIL EPISODES BAR (As shown in video) -->
+      <div class="season-selector-bar">
+        <div>
+          <span style="font-size:11px;color:var(--muted);text-transform:uppercase;font-weight:bold;display:block;">Choose Season</span>
+          <select id="seasonSelect" onchange="onSeasonChange()"></select>
+        </div>
+        <div style="font-size:12px;color:var(--accent);" id="epCountText">0 episodes</div>
+      </div>
+
+      <div id="episodeThumbGrid" class="episode-thumb-grid"></div>
       
       <div class="ad" style="margin-top:20px;">AD SPACE — EPISODE LIST BOTTOM (demo placeholder)</div>
       <p class="player-note">Demo note: Google Drive must permit viewing by the intended audience.</p>
@@ -192,8 +224,9 @@ button:hover,.btn:hover{transform:translateY(-1px);background:#78c8ff}
     let currentFilter = "All";
     let isAdmin = false;
     let currentUser = null;
-    let currentItemLinks = [];
+    let currentItemSeasons = [];
     let currentRawLink = "";
+    let activeItemTitle = "";
 
     onAuthStateChanged(auth, (user) => {
         currentUser = user;
@@ -235,16 +268,26 @@ button:hover,.btn:hover{transform:translateY(-1px);background:#78c8ff}
         const category = document.getElementById('post-category').value;
         const genre = document.getElementById('post-genre').value;
         const image = document.getElementById('post-image').value.trim();
-        const links = document.getElementById('post-links').value.trim();
+        const seasonsJsonStr = document.getElementById('post-seasons-json').value.trim();
 
         if(!title || !image) { alert("Please fill title and image URL!"); return; }
 
+        let seasonsData = [];
+        try {
+            if(seasonsJsonStr) {
+                seasonsData = JSON.parse(seasonsJsonStr);
+            }
+        } catch(e) {
+            alert("Invalid JSON format in Seasons data! Please check your brackets and commas.");
+            return;
+        }
+
         try {
             if (postId) {
-                await updateDoc(doc(db, "posts", postId), { title, category, genre, image, links });
-                alert("Post Updated Successfully!");
+                await updateDoc(doc(db, "posts", postId), { title, category, genre, image, seasons: seasonsData });
+                alert("Post Updated Successfully with new seasons!");
             } else {
-                await addDoc(collection(db, "posts"), { title, category, genre, image, links, views: 0, userEmail: currentUser.email, createdAt: new Date() });
+                await addDoc(collection(db, "posts"), { title, category, genre, image, seasons: seasonsData, views: 0, userEmail: currentUser.email, createdAt: new Date() });
                 alert("Post Published Successfully!");
             }
             resetForm();
@@ -263,8 +306,8 @@ button:hover,.btn:hover{transform:translateY(-1px);background:#78c8ff}
         document.getElementById('post-category').value = post.category || 'Series';
         document.getElementById('post-genre').value = post.genre || 'Anime';
         document.getElementById('post-image').value = post.image;
-        document.getElementById('post-links').value = post.links || '';
-        document.getElementById('form-heading').innerText = "Edit Post";
+        document.getElementById('post-seasons-json').value = post.seasons ? JSON.stringify(post.seasons, null, 2) : '';
+        document.getElementById('form-heading').innerText = "Edit Post (Add/Update Seasons)";
         document.getElementById('submit-btn').innerText = "Update Post";
         document.getElementById('cancel-edit-btn').style.display = "block";
         showSection('upload');
@@ -274,7 +317,7 @@ button:hover,.btn:hover{transform:translateY(-1px);background:#78c8ff}
         document.getElementById('edit-post-id').value = '';
         document.getElementById('post-title').value = '';
         document.getElementById('post-image').value = '';
-        document.getElementById('post-links').value = '';
+        document.getElementById('post-seasons-json').value = '';
         document.getElementById('form-heading').innerText = "Upload Post";
         document.getElementById('submit-btn').innerText = "Publish";
         document.getElementById('cancel-edit-btn').style.display = "none";
@@ -295,7 +338,12 @@ button:hover,.btn:hover{transform:translateY(-1px);background:#78c8ff}
         const catalog = document.getElementById("catalog");
         if(!catalog) return;
         catalog.innerHTML = "";
-        let shown = allPosts.filter(x => (currentFilter === "All" || x.category === currentFilter || x.genre === currentFilter) && x.title.toLowerCase().includes(q.toLowerCase()));
+        
+        let shown = allPosts.filter(x => {
+            let matchesFilter = (currentFilter === "All" || x.category === currentFilter || x.genre === currentFilter);
+            let matchesSearch = x.title.toLowerCase().includes(q.toLowerCase());
+            return matchesFilter && matchesSearch;
+        });
         
         if(shown.length === 0) {
             catalog.innerHTML = "<p style='color:var(--muted);'>No items available.</p>";
@@ -358,63 +406,101 @@ button:hover,.btn:hover{transform:translateY(-1px);background:#78c8ff}
         } catch(e) { console.error(e); }
 
         showSection('details');
+        activeItemTitle = item.title;
         document.getElementById("detailPoster").src = item.image;
         document.getElementById("detailTitle").textContent = item.title;
         document.getElementById("detailMeta").innerHTML = `<span>${item.category || 'Series'}</span><span>${item.genre || 'Anime'}</span>`;
-        document.getElementById("detailDesc").textContent = "Enjoy streaming episodes with the desktop player layout.";
+        document.getElementById("detailDesc").textContent = "Select a season and watch episodes with thumbnail cards.";
         document.getElementById("detailViews").textContent = `👁️ Total Views: ${item.views}`;
         document.getElementById("driveLink").value = "";
         clearPlayer();
 
-        currentItemLinks = [];
-        if(item.links && item.links.trim() !== "") {
-            currentItemLinks = item.links.split(/[\n,]+/).map(l => l.trim()).filter(l => l.length > 0);
-        }
-
-        renderEpisodes(item.title);
+        currentItemSeasons = item.seasons || [];
+        populateSeasonDropdown();
         setTimeout(fitDesktopPlayer, 100);
     }
 
-    function renderEpisodes(title) {
-        let box = document.getElementById("episodes");
-        box.innerHTML = "";
-        let n = currentItemLinks.length;
-        document.getElementById("episodeCount").textContent = n + " episodes";
+    function populateSeasonDropdown() {
+        let selectBox = document.getElementById("seasonSelect");
+        selectBox.innerHTML = "";
 
-        if(n === 0) {
-            box.innerHTML = "<p style='color:var(--muted);'>No video links added yet.</p>";
+        if(currentItemSeasons.length === 0) {
+            selectBox.innerHTML = "<option>No Seasons Available</option>";
+            document.getElementById("episodeThumbGrid").innerHTML = "<p style='color:var(--muted);'>No episodes added yet.</p>";
+            document.getElementById("epCountText").textContent = "0 episodes";
             return;
         }
 
-        currentItemLinks.forEach((link, idx) => {
-            let b = document.createElement("button");
-            b.className = "episode" + (idx === 0 ? " active" : "");
-            b.innerHTML = `<strong>Episode ${String(idx + 1).padStart(2,"0")}</strong><span>▶ Watch Now</span>`;
-            b.onclick = () => {
-                document.querySelectorAll(".episode").forEach(x => x.classList.remove("active"));
-                b.classList.add("active");
-                currentRawLink = link;
-                let embed = drivePreviewUrl(link);
-                document.getElementById("driveFrame").src = embed;
-                document.getElementById("nowPlaying").textContent = `Episode ${idx + 1}`;
-                document.getElementById("playerHeading").textContent = `${title} — Episode ${idx + 1}`;
-                document.getElementById("driveLink").value = link;
-            };
-            box.appendChild(b);
+        currentItemSeasons.forEach((seas, idx) => {
+            let opt = document.createElement("option");
+            opt.value = idx;
+            opt.textContent = seas.season || `Season ${idx + 1}`;
+            selectBox.appendChild(opt);
         });
 
-        if(n > 0) {
-            currentRawLink = currentItemLinks[0];
-            document.getElementById("driveFrame").src = drivePreviewUrl(currentItemLinks[0]);
-            document.getElementById("nowPlaying").textContent = "Episode 1";
-            document.getElementById("playerHeading").textContent = `${title} — Episode 1`;
-            document.getElementById("driveLink").value = currentItemLinks[0];
+        renderSeasonEpisodes(0);
+    }
+
+    window.onSeasonChange = function() {
+        let idx = document.getElementById("seasonSelect").value;
+        renderSeasonEpisodes(idx);
+    }
+
+    function renderSeasonEpisodes(seasonIndex) {
+        let grid = document.getElementById("episodeThumbGrid");
+        grid.innerHTML = "";
+
+        let seas = currentItemSeasons[seasonIndex];
+        if(!seas || !seas.episodes || seas.episodes.length === 0) {
+            grid.innerHTML = "<p style='color:var(--muted);'>No episodes in this season.</p>";
+            document.getElementById("epCountText").textContent = "0 episodes";
+            return;
+        }
+
+        let eps = seas.episodes;
+        document.getElementById("epCountText").textContent = eps.length + " episodes";
+
+        eps.forEach((ep, eIdx) => {
+            let card = document.createElement("div");
+            card.className = "ep-card" + (eIdx === 0 && seasonIndex == 0 ? " active" : "");
+            
+            let badgeText = `${Number(seasonIndex)+1}x${eIdx+1}`;
+            let thumbImg = ep.thumb || document.getElementById("detailPoster").src;
+
+            card.innerHTML = `
+                <img class="ep-thumb" src="${thumbImg}" alt="">
+                <div class="ep-info">
+                    <span class="ep-badge">${badgeText}</span>
+                    <div class="ep-title">${ep.title || `Episode ${eIdx+1}`}</div>
+                </div>
+            `;
+
+            card.onclick = () => {
+                document.querySelectorAll(".ep-card").forEach(x => x.classList.remove("active"));
+                card.classList.add("active");
+                currentRawLink = ep.link;
+                let embed = drivePreviewUrl(ep.link);
+                document.getElementById("driveFrame").src = embed;
+                document.getElementById("nowPlaying").textContent = `${seas.season} • Episode ${eIdx+1} (${ep.title})`;
+                document.getElementById("playerHeading").textContent = `${activeItemTitle} — ${seas.season} E${eIdx+1}`;
+                document.getElementById("driveLink").value = ep.link;
+            };
+            grid.appendChild(card);
+        });
+
+        // Play first episode of selected season by default
+        if(eps.length > 0) {
+            currentRawLink = eps[0].link;
+            document.getElementById("driveFrame").src = drivePreviewUrl(eps[0].link);
+            document.getElementById("nowPlaying").textContent = `${seas.season} • Episode 1 (${eps[0].title})`;
+            document.getElementById("playerHeading").textContent = `${activeItemTitle} — ${seas.season} E1`;
+            document.getElementById("driveLink").value = eps[0].link;
         }
     }
 
     window.drivePreviewUrl = function(raw) {
+        if(!raw) return "";
         let s = raw.trim();
-        if(!s) return "";
         if(s.includes("drive.google.com")) {
             let m = s.match(/\/file\/d\/([a-zA-Z0-9_-]+)/) || s.match(/[?&]id=([a-zA-Z0-9_-]+)/);
             if(m && m[1]) return "https://drive.google.com/file/d/" + m[1] + "/preview";
