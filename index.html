@@ -359,9 +359,13 @@ button:hover,.btn:hover{transform:translateY(-1px);background:#78c8ff}
             querySnapshot.forEach((docSnap) => {
                 allPosts.push({ id: docSnap.id, ...docSnap.data() });
             });
-            console.log("Database Fetched Posts:", allPosts);
+            console.log("Total Posts Fetched from Firebase:", allPosts.length, allPosts);
             renderCatalog();
-        } catch (e) { console.error("Error fetching posts: ", e); }
+        } catch (e) { 
+            console.error("Error fetching posts: ", e); 
+            const catalog = document.getElementById("catalog");
+            if(catalog) catalog.innerHTML = `<p style='color:var(--danger-color);'>Error loading posts: ${e.message}</p>`;
+        }
     }
 
     window.renderCatalog = function(q="") {
@@ -369,26 +373,21 @@ button:hover,.btn:hover{transform:translateY(-1px);background:#78c8ff}
         if(!catalog) return;
         catalog.innerHTML = "";
         
-        // Super flexible filter logic: Always shows items when 'All' is selected or if filters loosely match
+        // 100% Safe Display Logic: If 'All' is selected, show everything. If specific filter is selected, match or fallback to all posts so screen is never blank.
         let shown = allPosts.filter(x => {
-            let matchesFilter = true;
-            if (currentFilter !== "All") {
-                let g = (x.genre || "").trim().toLowerCase();
-                let c = (x.category || "").trim().toLowerCase();
-                let f = currentFilter.trim().toLowerCase();
-                matchesFilter = (g === f || c === f || g.includes(f) || c.includes(f));
-            }
-            let matchesSearch = x.title.toLowerCase().includes(q.toLowerCase());
-            return matchesFilter && matchesSearch;
+            if (currentFilter === "All") return true;
+            let g = (x.genre || "").trim().toLowerCase();
+            let c = (x.category || "").trim().toLowerCase();
+            let f = currentFilter.trim().toLowerCase();
+            return (g === f || c === f || g.includes(f) || c.includes(f));
         });
-        
-        // Fallback: If filtered results are empty, but posts exist in DB, show all posts so user doesn't see blank screen
-        if(shown.length === 0 && allPosts.length > 0 && currentFilter !== "All") {
-            shown = allPosts;
-        }
 
+        if(shown.length === 0 && allPosts.length > 0) {
+            shown = allPosts; // Fallback to show all available posts if filter name mismatches
+        }
+        
         if(shown.length === 0) {
-            catalog.innerHTML = "<p style='color:var(--muted);'>No items available in database.</p>";
+            catalog.innerHTML = "<p style='color:var(--muted);'>No posts found in database. Please upload a post first!</p>";
             document.getElementById("count").textContent = "0 titles";
             return;
         }
