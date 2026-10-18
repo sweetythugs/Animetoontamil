@@ -94,7 +94,7 @@ button:hover,.btn:hover{transform:translateY(-1px);background:#78c8ff}
       <button class="chip active" onclick="filterCards('All',this)">All</button>
       <button class="chip" onclick="filterCards('Tamil Dubbed',this)">Tamil Dubbed</button>
       <button class="chip" onclick="filterCards('Anime',this)">Anime</button>
-      <button class="chip" onclick="filterCards('Cartoon',this)">Cartoons</button>
+      <button class="chip" onclick="filterCards('Cartoons',this)">Cartoons</button>
     </div>
     <div id="catalog" class="grid"></div>
     <div class="ad">AD SPACE — BOTTOM BANNER (demo placeholder)</div>
@@ -113,7 +113,7 @@ button:hover,.btn:hover{transform:translateY(-1px);background:#78c8ff}
         </div>
         <div>
           <label>Genre / Type</label>
-          <select id="post-genre"><option value="Anime">Anime</option><option value="Cartoon">Cartoon</option><option value="Tamil Dubbed">Tamil Dubbed</option></select>
+          <select id="post-genre"><option value="Anime">Anime</option><option value="Cartoons">Cartoons</option><option value="Tamil Dubbed">Tamil Dubbed</option></select>
         </div>
         <div><label>Poster Image URL *</label><input id="post-image" placeholder="https://..."></div>
       </div>
@@ -321,7 +321,7 @@ button:hover,.btn:hover{transform:translateY(-1px);background:#78c8ff}
         document.getElementById('edit-post-id').value = post.id;
         document.getElementById('post-title').value = post.title;
         document.getElementById('post-category').value = post.category || 'Series';
-        document.getElementById('post-genre').value = post.genre || 'Anime';
+        document.getElementById('post-genre').value = post.genre || 'Cartoons';
         document.getElementById('post-image').value = post.image;
         
         const container = document.getElementById("seasonsBuilderContainer");
@@ -359,6 +359,7 @@ button:hover,.btn:hover{transform:translateY(-1px);background:#78c8ff}
             querySnapshot.forEach((docSnap) => {
                 allPosts.push({ id: docSnap.id, ...docSnap.data() });
             });
+            console.log("Fetched posts:", allPosts);
             renderCatalog();
         } catch (e) { console.error("Error fetching posts: ", e); }
     }
@@ -368,15 +369,18 @@ button:hover,.btn:hover{transform:translateY(-1px);background:#78c8ff}
         if(!catalog) return;
         catalog.innerHTML = "";
         
-        // Flexible matching for filters to ensure posts show up correctly across All, Anime, Cartoons, etc.
         let shown = allPosts.filter(x => {
-            let matchesFilter = (currentFilter === "All" || 
-                                 x.category === currentFilter || 
-                                 x.genre === currentFilter || 
-                                 (x.genre && x.genre.toLowerCase() === currentFilter.toLowerCase()) ||
-                                 (x.category && x.category.toLowerCase() === currentFilter.toLowerCase()));
+            let matchFilter = false;
+            if (currentFilter === "All") {
+                matchFilter = true;
+            } else {
+                let g = (x.genre || "").toLowerCase();
+                let c = (x.category || "").toLowerCase();
+                let f = currentFilter.toLowerCase();
+                matchFilter = (g === f || c === f || g.includes(f) || c.includes(f));
+            }
             let matchesSearch = x.title.toLowerCase().includes(q.toLowerCase());
-            return matchesFilter && matchesSearch;
+            return matchFilter && matchesSearch;
         });
         
         if(shown.length === 0) {
@@ -398,7 +402,7 @@ button:hover,.btn:hover{transform:translateY(-1px);background:#78c8ff}
                     <div class="card-body">
                         <h3>${x.title}</h3>
                         <div class="meta"><span>${x.category || 'Series'}</span><span>👁️ ${views}</span></div>
-                        <span class="tag">${x.genre || 'Anime'}</span>
+                        <span class="tag">${x.genre || 'Cartoons'}</span>
                     </div>
                 </div>
                 ${currentUser ? `
@@ -446,7 +450,7 @@ button:hover,.btn:hover{transform:translateY(-1px);background:#78c8ff}
         activeItemTitle = item.title;
         document.getElementById("detailPoster").src = item.image;
         document.getElementById("detailTitle").textContent = item.title;
-        document.getElementById("detailMeta").innerHTML = `<span>${item.category || 'Series'}</span><span>${item.genre || 'Anime'}</span>`;
+        document.getElementById("detailMeta").innerHTML = `<span>${item.category || 'Series'}</span><span>${item.genre || 'Cartoons'}</span>`;
         document.getElementById("detailDesc").textContent = "Select a season and watch episodes with thumbnail cards.";
         document.getElementById("detailViews").textContent = `👁️ Total Views: ${item.views}`;
         document.getElementById("driveLink").value = "";
