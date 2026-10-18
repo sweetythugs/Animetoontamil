@@ -307,8 +307,8 @@ button:hover,.btn:hover{transform:translateY(-1px);background:#78c8ff}
                 let eps = playArray.map((lnk, idx) => ({
                     title: `Episode ${idx + 1}`,
                     thumb: image,
-                    link: lnk, // Streaming Video Link
-                    downloadLink: downloadArray[idx] || lnk // URL Shortener Link (or fallback to play link)
+                    link: lnk, 
+                    downloadLink: downloadArray[idx] || ""
                 }));
                 
                 if(eps.length > 0) {
@@ -354,7 +354,7 @@ button:hover,.btn:hover{transform:translateY(-1px);background:#78c8ff}
         
         if(post.seasons && post.seasons.length > 0) {
             post.seasons.forEach(seas => {
-                let playStr = seas.episodes.map(e => e.link).join("\n");
+                let playStr = seas.episodes.map(e => e.link || "").join("\n");
                 let dlStr = seas.episodes.map(e => e.downloadLink || "").join("\n");
                 addSeasonBlock(seas.season, playStr, dlStr);
             });
@@ -387,12 +387,14 @@ button:hover,.btn:hover{transform:translateY(-1px);background:#78c8ff}
             const querySnapshot = await getDocs(collection(db, "posts"));
             querySnapshot.forEach((docSnap) => {
                 let data = docSnap.data();
+                
+                // Robust Fallback Converter for any post format
                 if(!data.seasons) {
                     if(data.links) {
                         let linkArray = data.links.split(/[\n,]+/).map(l => l.trim()).filter(l => l.length > 0);
                         data.seasons = [{
                             season: "Season 1",
-                            episodes: linkArray.map((lnk, i) => ({ title: `Episode ${i+1}`, thumb: data.image, link: lnk, downloadLink: lnk }))
+                            episodes: linkArray.map((lnk, i) => ({ title: `Episode ${i+1}`, thumb: data.image, link: lnk, downloadLink: "" }))
                         }];
                     } else {
                         data.seasons = [{
@@ -400,7 +402,17 @@ button:hover,.btn:hover{transform:translateY(-1px);background:#78c8ff}
                             episodes: [{ title: "Episode 1", thumb: data.image, link: "", downloadLink: "" }]
                         }];
                     }
+                } else {
+                    // Ensure every episode object has downloadLink property
+                    data.seasons.forEach(s => {
+                        if(s.episodes) {
+                            s.episodes.forEach(ep => {
+                                if(ep.downloadLink === undefined) ep.downloadLink = "";
+                            });
+                        }
+                    });
                 }
+                
                 allPosts.push({ id: docSnap.id, ...data });
             });
             renderCatalog();
@@ -422,7 +434,7 @@ button:hover,.btn:hover{transform:translateY(-1px);background:#78c8ff}
                 let f = currentFilter.trim().toLowerCase();
                 matchesFilter = (g === f || c === f || g.includes(f) || c.includes(f));
             }
-            let matchesSearch = x.title.toLowerCase().includes(q.toLowerCase());
+            let matchesSearch = (x.title || "").toLowerCase().includes(q.toLowerCase());
             return matchesFilter && matchesSearch;
         });
 
@@ -445,9 +457,9 @@ button:hover,.btn:hover{transform:translateY(-1px);background:#78c8ff}
             c.className = "card";
             c.innerHTML = `
                 <div>
-                    <img class="poster" src="${x.image}" alt="">
+                    <img class="poster" src="${x.image || ''}" alt="">
                     <div class="card-body">
-                        <h3>${x.title}</h3>
+                        <h3>${x.title || 'Untitled'}</h3>
                         <div class="meta"><span>${x.category || 'Series'}</span><span>👁️ ${views}</span></div>
                         <span class="tag">${x.genre || 'Cartoons'}</span>
                     </div>
@@ -588,8 +600,8 @@ button:hover,.btn:hover{transform:translateY(-1px);background:#78c8ff}
         document.getElementById("nowPlaying").textContent = `${seasonName} • Episode ${epNum} (${ep.title})`;
         document.getElementById("playerHeading").textContent = `${activeItemTitle} — ${seasonName} E${epNum}`;
         
-        // Priority to URL Shortener link if provided; else auto-convert Google Drive stream link
-        let targetDownloadUrl = ep.downloadLink ? ep.downloadLink : getDirectDownloadUrl(ep.link);
+        // If Shortener Download Link is provided, use it. Otherwise, auto-generate direct download link from stream link.
+        let targetDownloadUrl = (ep.downloadLink && ep.downloadLink.trim() !== "") ? ep.downloadLink : getDirectDownloadUrl(ep.link);
         let dlBtn = document.getElementById("directDownloadBtn");
         dlBtn.href = targetDownloadUrl;
         dlBtn.textContent = `📥 Download ${seasonName} E${epNum}`;
@@ -609,7 +621,6 @@ button:hover,.btn:hover{transform:translateY(-1px);background:#78c8ff}
         return s;
     }
 
-    // Auto Direct Download Fallback for Google Drive Links
     function getDirectDownloadUrl(raw) {
         if(!raw) return "#";
         let s = raw.trim();
