@@ -39,8 +39,12 @@ button:hover,.btn:hover{transform:translateY(-1px);background:#78c8ff}
 .drive-frame{display:block;width:1100px;height:619px;border:0;background:#000}
 .player-note{font-size:12px;color:#9eabc4;margin:10px 0 14px;line-height:1.5}
 
-.link-form{display:grid;grid-template-columns:1fr auto;gap:8px;margin:12px 0}.link-form input{min-width:0;background:#0b1220;border:1px solid #34415b;border-radius:10px;padding:11px;color:#fff;outline:none}
-.player-toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}.secondary{background:var(--surface2);border:1px solid var(--border);color:#e8f0ff}
+/* Direct Download Action Section */
+.download-section{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0}
+.download-btn{background:var(--green);color:#061321;font-weight:900;text-decoration:none;display:inline-flex;align-items:center;gap:8px;padding:12px 18px;border-radius:12px;font-size:14px;box-shadow:0 4px 12px rgba(86,223,155,0.25);transition:transform .15s,background .15s}
+.download-btn:hover{transform:translateY(-2px);background:#45cc87}
+
+.secondary{background:var(--surface2);border:1px solid var(--border);color:#e8f0ff}
 .secondary:hover{background:#293954;color:#fff}
 
 /* Season & Thumbnail Episode Cards Styling */
@@ -55,10 +59,10 @@ button:hover,.btn:hover{transform:translateY(-1px);background:#78c8ff}
 .ep-title{font-size:13px;font-weight:bold;color:#f6f8ff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ep-card.active{outline:2px solid var(--accent)}
 
-/* Admin Season Builder Styles */
-.season-builder-row{background:#0b1220;border:1px solid var(--border);padding:12px;border-radius:10px;margin-bottom:10px;position:relative}
+/* Admin Season Builder Styles with Dual Links */
+.season-builder-row{background:#0b1220;border:1px solid var(--border);padding:12px;border-radius:10px;margin-bottom:12px;position:relative}
 .season-builder-row input{margin-bottom:8px}
-.season-builder-row textarea{width:100%;background:#121a2b;border:1px solid var(--border);color:#fff;padding:8px;border-radius:8px;min-height:70px;outline:none}
+.season-builder-row textarea{width:100%;background:#121a2b;border:1px solid var(--border);color:#fff;padding:8px;border-radius:8px;min-height:60px;outline:none;font-size:12px;margin-bottom:8px}
 .remove-season-btn{background:var(--danger-color);color:#fff;border:none;padding:4px 8px;border-radius:6px;cursor:pointer;font-size:11px;float:right}
 
 .admin-shell{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:20px;max-width:850px;margin:auto}
@@ -162,10 +166,15 @@ button:hover,.btn:hover{transform:translateY(-1px);background:#78c8ff}
         </div>
       </div>
       
-      <div class="player-note">Desktop-style Google Drive player is kept as the source layout and scaled to fit the phone screen.</div>
+      <div class="player-note">Select an episode to play or download directly.</div>
       
-      <div class="link-form"><input id="driveLink" placeholder="Paste Google Drive video link here"><button onclick="loadDriveLink()">Load Link</button></div>
-      <div class="player-toolbar"><button class="secondary" onclick="clearPlayer()">Clear Player</button><button class="secondary" onclick="copyCurrentLink()">Copy Current Link</button></div>
+      <!-- DIRECT DOWNLOAD BUTTON SECTION -->
+      <div class="download-section">
+        <a id="directDownloadBtn" class="download-btn" href="#" target="_blank" rel="noopener noreferrer">
+          📥 Download Episode
+        </a>
+      </div>
+      
       <div class="ad">AD SPACE — PLAYER BOTTOM (demo placeholder)</div>
       
       <!-- CHOOSE SEASON & THUMBNAIL EPISODES BAR -->
@@ -180,7 +189,7 @@ button:hover,.btn:hover{transform:translateY(-1px);background:#78c8ff}
       <div id="episodeThumbGrid" class="episode-thumb-grid"></div>
       
       <div class="ad" style="margin-top:20px;">AD SPACE — EPISODE LIST BOTTOM (demo placeholder)</div>
-      <p class="player-note">Demo note: Google Drive must permit viewing by the intended audience.</p>
+      <p class="player-note">Demo note: Google Drive must permit viewing and downloading by the intended audience.</p>
       <button onclick="showSection('home')" class="secondary">← Back to Anime List</button>
     </div>
   </section>
@@ -220,7 +229,6 @@ button:hover,.btn:hover{transform:translateY(-1px);background:#78c8ff}
     let isAdmin = false;
     let currentUser = null;
     let currentItemSeasons = [];
-    let currentRawLink = "";
     let activeItemTitle = "";
 
     onAuthStateChanged(auth, (user) => {
@@ -256,7 +264,7 @@ button:hover,.btn:hover{transform:translateY(-1px);background:#78c8ff}
         fetchPosts();
     }
 
-    window.addSeasonBlock = function(seasonName = "", linksText = "") {
+    window.addSeasonBlock = function(seasonName = "", playLinksText = "", downloadLinksText = "") {
         const container = document.getElementById("seasonsBuilderContainer");
         const index = container.children.length + 1;
         const row = document.createElement("div");
@@ -265,8 +273,12 @@ button:hover,.btn:hover{transform:translateY(-1px);background:#78c8ff}
             <button type="button" class="remove-season-btn" onclick="this.parentElement.remove()">Remove</button>
             <label style="font-size:11px;color:var(--muted);font-weight:bold;">Season Name</label>
             <input type="text" class="sb-season-name" value="${seasonName || 'Season ' + index}" placeholder="Season 1">
-            <label style="font-size:11px;color:var(--muted);font-weight:bold;margin-top:6px;display:block;">Paste Episode Links (Line by line or comma separated)</label>
-            <textarea class="sb-season-links" placeholder="https://drive.google.com/...">${linksText}</textarea>
+            
+            <label style="font-size:11px;color:var(--accent);font-weight:bold;margin-top:6px;display:block;">1. Video Stream Links (Google Drive / MEGA)</label>
+            <textarea class="sb-season-play-links" placeholder="https://drive.google.com/file/d/...">${playLinksText}</textarea>
+            
+            <label style="font-size:11px;color:var(--green);font-weight:bold;margin-top:4px;display:block;">2. Shortener Download Links (GPLinks / Cuty.io)</label>
+            <textarea class="sb-season-download-links" placeholder="https://gplinks.co/...">${downloadLinksText}</textarea>
         `;
         container.appendChild(row);
     }
@@ -285,25 +297,30 @@ button:hover,.btn:hover{transform:translateY(-1px);background:#78c8ff}
         const rows = document.querySelectorAll(".season-builder-row");
         rows.forEach(row => {
             let sName = row.querySelector(".sb-season-name").value.trim() || "Season 1";
-            let rawLinks = row.querySelector(".sb-season-links").value.trim();
-            if(rawLinks) {
-                let linkArray = rawLinks.split(/[\n,]+/).map(l => l.trim()).filter(l => l.length > 0);
-                let eps = linkArray.map((lnk, idx) => ({
+            let playLinksRaw = row.querySelector(".sb-season-play-links").value.trim();
+            let downloadLinksRaw = row.querySelector(".sb-season-download-links").value.trim();
+            
+            if(playLinksRaw) {
+                let playArray = playLinksRaw.split(/[\n,]+/).map(l => l.trim()).filter(l => l.length > 0);
+                let downloadArray = downloadLinksRaw ? downloadLinksRaw.split(/[\n,]+/).map(l => l.trim()).filter(l => l.length > 0) : [];
+                
+                let eps = playArray.map((lnk, idx) => ({
                     title: `Episode ${idx + 1}`,
                     thumb: image,
-                    link: lnk
+                    link: lnk, // Streaming Video Link
+                    downloadLink: downloadArray[idx] || lnk // URL Shortener Link (or fallback to play link)
                 }));
+                
                 if(eps.length > 0) {
                     seasonsData.push({ season: sName, episodes: eps });
                 }
             }
         });
 
-        // Fallback: If no season rows added, create a default Season 1
         if(seasonsData.length === 0) {
             seasonsData.push({
                 season: "Season 1",
-                episodes: [{ title: "Episode 1", thumb: image, link: "" }]
+                episodes: [{ title: "Episode 1", thumb: image, link: "", downloadLink: "" }]
             });
         }
 
@@ -337,13 +354,14 @@ button:hover,.btn:hover{transform:translateY(-1px);background:#78c8ff}
         
         if(post.seasons && post.seasons.length > 0) {
             post.seasons.forEach(seas => {
-                let linksStr = seas.episodes.map(e => e.link).join("\n");
-                addSeasonBlock(seas.season, linksStr);
+                let playStr = seas.episodes.map(e => e.link).join("\n");
+                let dlStr = seas.episodes.map(e => e.downloadLink || "").join("\n");
+                addSeasonBlock(seas.season, playStr, dlStr);
             });
         } else if(post.links) {
-            addSeasonBlock("Season 1", post.links);
+            addSeasonBlock("Season 1", post.links, "");
         } else {
-            addSeasonBlock("Season 1", "");
+            addSeasonBlock("Season 1", "", "");
         }
 
         document.getElementById('form-heading').innerText = "Edit Post";
@@ -357,7 +375,7 @@ button:hover,.btn:hover{transform:translateY(-1px);background:#78c8ff}
         document.getElementById('post-title').value = '';
         document.getElementById('post-image').value = '';
         document.getElementById('seasonsBuilderContainer').innerHTML = '';
-        addSeasonBlock("Season 1", "");
+        addSeasonBlock("Season 1", "", "");
         document.getElementById('form-heading').innerText = "Upload Post";
         document.getElementById('submit-btn').innerText = "Publish Post";
         document.getElementById('cancel-edit-btn').style.display = "none";
@@ -369,18 +387,17 @@ button:hover,.btn:hover{transform:translateY(-1px);background:#78c8ff}
             const querySnapshot = await getDocs(collection(db, "posts"));
             querySnapshot.forEach((docSnap) => {
                 let data = docSnap.data();
-                // Smart Fallback Fix: If seasons is missing, automatically wrap links or create a default season
                 if(!data.seasons) {
                     if(data.links) {
                         let linkArray = data.links.split(/[\n,]+/).map(l => l.trim()).filter(l => l.length > 0);
                         data.seasons = [{
                             season: "Season 1",
-                            episodes: linkArray.map((lnk, i) => ({ title: `Episode ${i+1}`, thumb: data.image, link: lnk }))
+                            episodes: linkArray.map((lnk, i) => ({ title: `Episode ${i+1}`, thumb: data.image, link: lnk, downloadLink: lnk }))
                         }];
                     } else {
                         data.seasons = [{
                             season: "Season 1",
-                            episodes: [{ title: "Episode 1", thumb: data.image, link: "" }]
+                            episodes: [{ title: "Episode 1", thumb: data.image, link: "", downloadLink: "" }]
                         }];
                     }
                 }
@@ -465,7 +482,7 @@ button:hover,.btn:hover{transform:translateY(-1px);background:#78c8ff}
         document.querySelectorAll('main > section').forEach(s => s.classList.add('hidden'));
         document.getElementById(sectionId).classList.remove('hidden');
         if(sectionId === 'upload' && document.getElementById('seasonsBuilderContainer').children.length === 0) {
-            addSeasonBlock("Season 1", "");
+            addSeasonBlock("Season 1", "", "");
         }
         window.scrollTo(0,0);
     }
@@ -481,16 +498,16 @@ button:hover,.btn:hover{transform:translateY(-1px);background:#78c8ff}
         document.getElementById("detailPoster").src = item.image;
         document.getElementById("detailTitle").textContent = item.title;
         document.getElementById("detailMeta").innerHTML = `<span>${item.category || 'Series'}</span><span>${item.genre || 'Cartoons'}</span>`;
-        document.getElementById("detailDesc").textContent = "Select a season and watch episodes with thumbnail cards.";
+        document.getElementById("detailDesc").textContent = "Select a season and watch episodes or download them directly.";
         document.getElementById("detailViews").textContent = `👁️ Total Views: ${item.views}`;
-        document.getElementById("driveLink").value = "";
+        
         clearPlayer();
 
         currentItemSeasons = item.seasons || [];
         if(currentItemSeasons.length === 0) {
             currentItemSeasons = [{
                 season: "Season 1",
-                episodes: [{ title: "Episode 1", thumb: item.image, link: "" }]
+                episodes: [{ title: "Episode 1", thumb: item.image, link: "", downloadLink: "" }]
             }];
         }
         populateSeasonDropdown();
@@ -555,23 +572,27 @@ button:hover,.btn:hover{transform:translateY(-1px);background:#78c8ff}
             card.onclick = () => {
                 document.querySelectorAll(".ep-card").forEach(x => x.classList.remove("active"));
                 card.classList.add("active");
-                currentRawLink = ep.link;
-                let embed = drivePreviewUrl(ep.link);
-                document.getElementById("driveFrame").src = embed;
-                document.getElementById("nowPlaying").textContent = `${seas.season} • Episode ${eIdx+1} (${ep.title})`;
-                document.getElementById("playerHeading").textContent = `${activeItemTitle} — ${seas.season} E${eIdx+1}`;
-                document.getElementById("driveLink").value = ep.link;
+                loadEpisodePlayerAndDownload(ep, seas.season, eIdx + 1);
             };
             grid.appendChild(card);
         });
 
-        if(eps.length > 0 && eps[0].link) {
-            currentRawLink = eps[0].link;
-            document.getElementById("driveFrame").src = drivePreviewUrl(eps[0].link);
-            document.getElementById("nowPlaying").textContent = `${seas.season} • Episode 1 (${eps[0].title})`;
-            document.getElementById("playerHeading").textContent = `${activeItemTitle} — ${seas.season} E1`;
-            document.getElementById("driveLink").value = eps[0].link;
+        if(eps.length > 0) {
+            loadEpisodePlayerAndDownload(eps[0], seas.season, 1);
         }
+    }
+
+    function loadEpisodePlayerAndDownload(ep, seasonName, epNum) {
+        let embedUrl = drivePreviewUrl(ep.link);
+        document.getElementById("driveFrame").src = embedUrl;
+        document.getElementById("nowPlaying").textContent = `${seasonName} • Episode ${epNum} (${ep.title})`;
+        document.getElementById("playerHeading").textContent = `${activeItemTitle} — ${seasonName} E${epNum}`;
+        
+        // Priority to URL Shortener link if provided; else auto-convert Google Drive stream link
+        let targetDownloadUrl = ep.downloadLink ? ep.downloadLink : getDirectDownloadUrl(ep.link);
+        let dlBtn = document.getElementById("directDownloadBtn");
+        dlBtn.href = targetDownloadUrl;
+        dlBtn.textContent = `📥 Download ${seasonName} E${epNum}`;
     }
 
     window.drivePreviewUrl = function(raw) {
@@ -588,26 +609,25 @@ button:hover,.btn:hover{transform:translateY(-1px);background:#78c8ff}
         return s;
     }
 
-    window.loadDriveLink = function() {
-        let raw = document.getElementById("driveLink").value.trim();
-        if(!raw){ alert("Paste a Google Drive or MEGA video link first."); return; }
-        currentRawLink = raw;
-        let url = drivePreviewUrl(raw);
-        document.getElementById("driveFrame").src = url;
-        document.getElementById("nowPlaying").textContent = "Custom Loaded Link";
-        document.getElementById("playerHeading").textContent = "Google Drive Player";
+    // Auto Direct Download Fallback for Google Drive Links
+    function getDirectDownloadUrl(raw) {
+        if(!raw) return "#";
+        let s = raw.trim();
+        if(s.includes("drive.google.com")) {
+            let m = s.match(/\/file\/d\/([a-zA-Z0-9_-]+)/) || s.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+            if(m && m[1]) {
+                return `https://drive.google.com/uc?export=download&id=${m[1]}`;
+            }
+        }
+        return s;
     }
 
     window.clearPlayer = function() {
         document.getElementById("driveFrame").src = "about:blank";
         document.getElementById("nowPlaying").textContent = "Select an episode";
         document.getElementById("playerHeading").textContent = "Google Drive Player";
-        currentRawLink = "";
-    }
-
-    window.copyCurrentLink = async function() {
-        if(!currentRawLink){ alert("Load a link first."); return; }
-        try { await navigator.clipboard.writeText(currentRawLink); alert("Link copied."); } catch(e) { prompt("Copy this link:", currentRawLink); }
+        document.getElementById("directDownloadBtn").href = "#";
+        document.getElementById("directDownloadBtn").textContent = "📥 Download Episode";
     }
 
     window.deletePost = async function(id) {
