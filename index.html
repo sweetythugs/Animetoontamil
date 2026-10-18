@@ -2,99 +2,88 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=1280">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <meta name="theme-color" content="#080c16">
     <title>AnimeSalt - Ultimate Streaming App</title>
     <style>
-        :root {
-            --bg: #080c16;
-            --surface: #121a2b;
-            --surface2: #1b263b;
-            --text: #f6f8ff;
-            --muted: #a6b2c8;
-            --accent: #50b7ff;
-            --accent2: #8569ff;
-            --border: #2a3750;
-            --radius: 16px;
-            --green: #56df9b;
-            --danger-color: #ef4444;
-            --success-color: #10b981;
-        }
-        *{box-sizing:border-box}html{scroll-behavior:smooth}
-        body{margin:0;background:var(--bg);color:var(--text);font:16px/1.65 system-ui,-apple-system,'Segoe UI',Arial,sans-serif;min-height:100vh;padding-bottom:70px}
-        a{color:inherit;text-decoration:none}button,input{font:inherit}
+        :root{--bg:#080c16;--surface:#121a2b;--surface2:#1b263b;--text:#f6f8ff;--muted:#a6b2c8;--accent:#50b7ff;--accent2:#8569ff;--border:#2a3750;--radius:16px;--green:#56df9b;--danger-color:#ef4444;--success-color:#10b981}
+        *{box-sizing:border-box}html{scroll-behavior:smooth}html,body{margin:0;background:var(--bg);color:var(--text);font:16px/1.65 system-ui,-apple-system,'Segoe UI',Arial,sans-serif}body{min-height:100vh;padding-bottom:70px}a{color:inherit;text-decoration:none}button,input{font:inherit}
         
-        header{position:sticky;top:0;z-index:30;background:rgba(8,12,22,.96);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:10px max(16px,calc((100% - 1240px)/2));display:flex;align-items:center;gap:20px;flex-wrap:wrap}
-        .logo{font-size:24px;font-weight:900;letter-spacing:-.7px;white-space:nowrap}.logo span{color:var(--accent)}
-        .search{flex:1;min-width:180px;display:flex;align-items:center;background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden}
-        .search input{width:100%;background:transparent;border:0;color:var(--text);padding:11px 13px;outline:none}
+        header{position:sticky;top:0;z-index:30;background:rgba(8,12,22,.96);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:10px 16px;display:flex;align-items:center;gap:15px;flex-wrap:wrap}
+        .logo{font-size:22px;font-weight:900;letter-spacing:-.7px;white-space:nowrap}.logo span{color:var(--accent)}
+        .search{flex:1;min-width:150px;display:flex;align-items:center;background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+        .search input{width:100%;background:transparent;border:0;color:var(--text);padding:10px 12px;outline:none}
         
         button,.btn{border:0;border-radius:10px;background:var(--accent);color:#061321;font-weight:800;padding:10px 14px;cursor:pointer;transition:transform .18s,background .18s}
         button:hover,.btn:hover{transform:translateY(-1px);background:#78c8ff}
         
-        .wrap{max-width:1240px;margin:auto;padding:20px}
-        .navlinks{display:flex;align-items:center;gap:18px;width:100%;order:3;padding:0 0 3px;font-size:13px;font-weight:750;color:#d7e2f5}
+        .wrap{max-width:1240px;margin:auto;padding:15px}
+        .navlinks{display:flex;align-items:center;gap:15px;width:100%;order:3;padding:0 0 3px;font-size:13px;font-weight:750;color:#d7e2f5;overflow-x:auto;white-space:nowrap}
         .navlinks a:hover{color:var(--accent)}
         
-        .az-row{display:flex;align-items:center;gap:7px;overflow-x:auto;padding:10px 0 3px;white-space:nowrap}
+        .az-row{display:flex;align-items:center;gap:7px;overflow-x:auto;padding:10px 0 3px;white-space:nowrap;scrollbar-width:thin}
         .az-row span{font-size:11px;color:var(--muted);font-weight:800}
-        .az-row button{padding:4px 7px;background:var(--surface);color:#d7e2f5;border:1px solid var(--border);font-size:11px;border-radius:6px}
+        .az-row button{padding:4px 8px;background:var(--surface);color:#d7e2f5;border:1px solid var(--border);font-size:11px;border-radius:6px}
         .az-row button.active{background:var(--accent);color:#061321}
 
-        .hero{position:relative;isolation:isolate;margin:5px 0 28px;min-height:270px;border:1px solid var(--border);border-radius:24px;overflow:hidden;background:linear-gradient(115deg,#1a2a49,#15162e 70%,#302355);padding:42px 38px}
-        .hero:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,#10172a 4%,rgba(16,23,42,.9) 45%,rgba(16,23,42,.25));z-index:-1}
-        .eyebrow{color:#8cd0ff;text-transform:uppercase;letter-spacing:2px;font-size:.76rem;font-weight:900}
-        .hero h1{font-size:3.5rem;line-height:1.1;margin:13px 0}
-        .hero p{color:#d0d8e8;max-width:620px;margin:0;line-height:1.6}
+        .hero{position:relative;isolation:isolate;margin:5px 0 20px;border:1px solid var(--border);border-radius:20px;overflow:hidden;background:linear-gradient(115deg,#1a2a49,#15162e 70%,#302355);padding:30px 20px}
+        .hero h1{font-size:2rem;line-height:1.1;margin:10px 0}
+        .hero p{color:#d0d8e8;font-size:0.9rem;margin:0;line-height:1.5}
 
-        .ad{min-height:56px;border:1px dashed #43526b;border-radius:12px;color:#8290aa;display:flex;align-items:center;justify-content:center;text-align:center;font-size:12px;letter-spacing:1px;background:#0c1220;margin:24px 0}
-        .section-title{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:30px 0 16px}
-        .section-title h2{font-size:1.4rem;line-height:1.3;margin:0}
-        .section-title small{color:var(--muted)}
+        .ad{min-height:50px;border:1px dashed #43526b;border-radius:12px;color:#8290aa;display:flex;align-items:center;justify-content:center;text-align:center;font-size:11px;letter-spacing:1px;background:#0c1220;margin:20px 0}
+        .section-title{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:25px 0 12px}
+        .section-title h2{font-size:1.2rem;line-height:1.3;margin:0}
+        .section-title small{color:var(--muted);font-size:0.8rem}
 
-        .grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:20px}
+        .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+        @media(min-width:768px){.grid{grid-template-columns:repeat(5,minmax(0,1fr));gap:20px}}
+
         .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;cursor:pointer;transition:transform .2s,border-color .2s;padding:10px;display:flex;flex-direction:column;justify-content:space-between}
         .card:hover{transform:translateY(-4px);border-color:var(--accent)}
-        .poster{width:100%;aspect-ratio:2/3;object-fit:cover;display:block;background:linear-gradient(145deg,#1d3b58,#382b65);border-radius:12px}
-        .card-body{padding:13px}
-        .card h3{font-size:15px;line-height:1.4;margin:8px 0 8px}
-        .meta{color:var(--muted);font-size:12px;display:flex;justify-content:space-between}
+        .poster{width:100%;aspect-ratio:2/3;object-fit:cover;display:block;background:linear-gradient(145deg,#1d3b58,#382b65);border-radius:10px}
+        .card h3{font-size:14px;line-height:1.4;margin:8px 0 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+        .meta{color:var(--muted);font-size:11px;display:flex;justify-content:space-between}
 
         .card-actions{display:flex;gap:6px;margin-top:6px}
-        .delete-btn{background:var(--danger-color);color:white;border:none;padding:4px 8px;border-radius:4px;cursor:pointer;font-size:0.8rem;flex:1}
-        .edit-btn{background:var(--success-color);color:white;border:none;padding:4px 8px;border-radius:4px;cursor:pointer;font-size:0.8rem;flex:1}
+        .delete-btn{background:var(--danger-color);color:white;border:none;padding:4px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem;flex:1}
+        .edit-btn{background:var(--success-color);color:white;border:none;padding:4px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem;flex:1}
 
-        /* Detail View & Exact Desktop Player Styles from index-1 */
+        /* Detail View & Desktop Player Container for Mobile */
         #details {display:none;background:var(--surface);border:1px solid var(--border);border-radius:18px}
         #details.active {display:block}
         
-        .detail-head{display:flex;gap:20px;padding:20px;border-radius:18px 18px 0 0}
-        .detail-poster{width:145px;height:205px;object-fit:cover;border-radius:12px;border:1px solid var(--border)}
-        .detail-copy h2{margin:3px 0 9px;font-size:30px;line-height:1.2;color:var(--accent)}
-        .detail-copy p{color:#c0cbde;line-height:1.55;font-size:14px}
+        .detail-head{display:flex;gap:15px;padding:15px;border-radius:18px 18px 0 0;flex-wrap:wrap}
+        .detail-poster{width:110px;height:160px;object-fit:cover;border-radius:10px;border:1px solid var(--border)}
+        .detail-copy h2{margin:3px 0 8px;font-size:22px;line-height:1.2;color:var(--accent)}
+        .detail-copy p{color:#c0cbde;line-height:1.5;font-size:13px}
         
-        .player-area{padding:0 18px 20px}
-        .player-scroller{width:100%;overflow:hidden;border-radius:12px;background:#000;position:sticky;top:76px;z-index:15;box-shadow:0 8px 28px #0008}
+        .player-area{padding:0 12px 15px}
+        
+        /* EXACT DESKTOP STICKY PLAYER COPIED FROM INDEX-1 (Works smoothly with horizontal scroll on mobile) */
+        .player-scroller{width:100%;overflow-x:auto;overflow-y:hidden;border-radius:12px;background:#000;position:sticky;top:65px;z-index:15;box-shadow:0 8px 28px #0008;scrollbar-width:auto}
         .player-fixed{width:1100px;background:#000;transform-origin:top left}
         .player-titlebar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 12px;background:#121a2b;width:1100px;color:#e5edfc;font-size:13px;border-bottom:1px solid var(--border)}
         .drive-frame{display:block;width:1100px;height:619px;border:0;background:#000}
-        .player-note{font-size:12px;color:#9eabc4;margin:10px 0 14px;line-height:1.5}
+        .player-note{font-size:11px;color:#9eabc4;margin:10px 0 14px;line-height:1.5}
         
-        .episode-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(145px,1fr));gap:12px}
-        .episode{background:#eaf5ff;color:#102033;border-radius:10px;border:1px solid #b9dcf7;padding:12px;text-align:left;cursor:pointer}
+        .episode-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+        @media(min-width:768px){.episode-grid{grid-template-columns:repeat(5,minmax(0,1fr));}}
+        
+        .episode{background:#eaf5ff;color:#102033;border-radius:10px;border:1px solid #b9dcf7;padding:10px;text-align:left;cursor:pointer}
         .episode strong{display:block;font-size:12px}
-        .episode span{display:block;color:#36516c;font-size:10px;margin-top:5px}
+        .episode span{display:block;color:#36516c;font-size:10px;margin-top:4px}
         .episode:hover, .episode.active{outline:2px solid var(--accent);background:#c9eaff}
 
-        .admin-shell{max-width:900px;margin:24px auto;background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:20px}
-        .admin-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+        .admin-shell{max-width:900px;margin:15px auto;background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:15px}
+        .admin-grid{display:grid;grid-template-columns:1px;gap:10px}
+        @media(min-width:768px){.admin-grid{grid-template-columns:repeat(2,minmax(0,1fr));}}
         .admin-grid label{display:block;font-size:12px;color:var(--muted);font-weight:800}
         .admin-grid input,.admin-grid textarea,.admin-grid select{width:100%;margin-top:5px;background:#0b1220;border:1px solid #34415b;border-radius:9px;padding:10px;color:#fff}
         .admin-grid textarea{min-height:85px;resize:vertical}
         .admin-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
         
         .bottom-nav{position:fixed;bottom:0;left:0;width:100%;background:rgba(8,12,22,.97);border-top:1px solid var(--border);display:flex;justify-content:space-around;padding:10px 0;z-index:1000}
-        .nav-item{background:none;border:none;color:var(--muted);cursor:pointer;display:flex;flex-direction:column;align-items:center;font-size:0.75rem;font-weight:bold}
+        .nav-item{background:none;border:none;color:var(--muted);cursor:pointer;display:flex;flex-direction:column;align-items:center;font-size:0.7rem;font-weight:bold}
         .nav-item.active,.nav-item:hover{color:var(--accent)}
         .section{display:none}.section.active{display:block}
     </style>
@@ -109,7 +98,7 @@
 </header>
 
 <main class="wrap">
-  <!-- MAIN APP CONTENT -->
+  <!-- MAIN APP CONTENT (Normal Mobile View) -->
   <div id="main-app-content">
     <section id="home" class="section active">
       <div class="hero"><div class="eyebrow">Anime • Cartoons • Episodes</div><h1>Your anime world, all in one place.</h1><p>Browse anime and cartoons, select seasons, and play episodes with their saved video links.</p></div>
@@ -152,7 +141,7 @@
     </section>
   </div>
 
-  <!-- DETAILS PAGE VIEW WITH INDEX-1 DESKTOP PLAYER -->
+  <!-- DETAILS PAGE: Video Player section has the Desktop Sticky layout, rest is normal mobile view -->
   <section id="details">
     <div class="detail-head" id="detailHead">
       <img id="detail-img" class="detail-poster" alt="Poster">
@@ -160,13 +149,14 @@
         <div class="eyebrow">SERIES DETAILS</div>
         <h2 id="detail-title"></h2>
         <div id="detail-meta" class="meta"></div>
-        <p id="detail-views" style="color:var(--accent);font-weight:bold;margin-top:10px;"></p>
+        <p id="detail-views" style="color:var(--accent);font-weight:bold;margin-top:8px;"></p>
       </div>
     </div>
     <div class="player-area">
       <div class="ad">AD SPACE — PLAYER TOP</div>
       <div class="section-title"><h2>▶ Video Player</h2><small id="nowPlaying">Select an episode</small></div>
       
+      <!-- DESKTOP STICKY PLAYER CONTAINER (Can scroll horizontally on mobile without breaking page layout) -->
       <div class="player-scroller" id="playerScroller">
         <div class="player-fixed" id="playerFixed">
           <div class="player-titlebar">
@@ -176,7 +166,7 @@
           <iframe id="driveFrame" class="drive-frame" src="about:blank" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>
         </div>
       </div>
-      <div class="player-note">Desktop-style Google Drive player scales to fit and stays visible while scrolling episodes.</div>
+      <div class="player-note">Desktop-style Google Drive player. You can swipe/scroll horizontally if needed while it stays sticky.</div>
 
       <div class="ad">AD SPACE — PLAYER BOTTOM</div>
       <div class="section-title"><h2>Episodes</h2><small id="episodeCount">0 episodes</small></div>
@@ -238,7 +228,6 @@
     function updateUI() {
         const authBtn = document.getElementById('auth-nav-btn');
         const authBottom = document.getElementById('auth-nav-btn-bottom');
-        const uploadForm = document.getElementById('upload-form-container') || document.querySelector('.admin-shell');
         const uploadWarning = document.getElementById('upload-warning');
 
         if (currentUser) {
