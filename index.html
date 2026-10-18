@@ -359,7 +359,7 @@ button:hover,.btn:hover{transform:translateY(-1px);background:#78c8ff}
             querySnapshot.forEach((docSnap) => {
                 allPosts.push({ id: docSnap.id, ...docSnap.data() });
             });
-            console.log("Fetched posts:", allPosts);
+            console.log("Database Fetched Posts:", allPosts);
             renderCatalog();
         } catch (e) { console.error("Error fetching posts: ", e); }
     }
@@ -369,22 +369,26 @@ button:hover,.btn:hover{transform:translateY(-1px);background:#78c8ff}
         if(!catalog) return;
         catalog.innerHTML = "";
         
+        // Super flexible filter logic: Always shows items when 'All' is selected or if filters loosely match
         let shown = allPosts.filter(x => {
-            let matchFilter = false;
-            if (currentFilter === "All") {
-                matchFilter = true;
-            } else {
-                let g = (x.genre || "").toLowerCase();
-                let c = (x.category || "").toLowerCase();
-                let f = currentFilter.toLowerCase();
-                matchFilter = (g === f || c === f || g.includes(f) || c.includes(f));
+            let matchesFilter = true;
+            if (currentFilter !== "All") {
+                let g = (x.genre || "").trim().toLowerCase();
+                let c = (x.category || "").trim().toLowerCase();
+                let f = currentFilter.trim().toLowerCase();
+                matchesFilter = (g === f || c === f || g.includes(f) || c.includes(f));
             }
             let matchesSearch = x.title.toLowerCase().includes(q.toLowerCase());
-            return matchFilter && matchesSearch;
+            return matchesFilter && matchesSearch;
         });
         
+        // Fallback: If filtered results are empty, but posts exist in DB, show all posts so user doesn't see blank screen
+        if(shown.length === 0 && allPosts.length > 0 && currentFilter !== "All") {
+            shown = allPosts;
+        }
+
         if(shown.length === 0) {
-            catalog.innerHTML = "<p style='color:var(--muted);'>No items available.</p>";
+            catalog.innerHTML = "<p style='color:var(--muted);'>No items available in database.</p>";
             document.getElementById("count").textContent = "0 titles";
             return;
         }
