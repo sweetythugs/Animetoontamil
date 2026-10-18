@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=1280">
+    <meta name="theme-color" content="#080c16">
     <title>AnimeSalt - Ultimate Streaming App</title>
     <style>
         :root {
@@ -19,856 +20,438 @@
             --danger-color: #ef4444;
             --success-color: #10b981;
         }
-        body {
-            background-color: var(--bg);
-            color: var(--text);
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding-bottom: 70px;
-        }
-        header {
-            padding: 1.2rem 2rem;
-            background: rgba(8,12,22,.96);
-            backdrop-filter: blur(16px);
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        header h1 {
-            color: var(--accent);
-            margin: 0;
-            font-size: 1.8rem;
-        }
-        #user-status {
-            font-size: 0.85rem;
-            color: var(--muted);
-        }
-        .container {
-            padding: 1.5rem 2rem;
-            max-width: 1400px;
-            margin: auto;
-        }
-        .az-bar {
-            display: flex;
-            gap: 6px;
-            overflow-x: auto;
-            padding: 10px 0;
-            margin-bottom: 2rem;
-            scrollbar-width: thin;
-        }
-        .az-btn {
-            background: var(--surface);
-            color: var(--text);
-            border: 1px solid var(--border);
-            padding: 6px 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: bold;
-        }
-        .az-btn:hover, .az-btn.active {
-            background: var(--accent);
-            color: #061321;
-        }
-        h2.section-title {
-            font-size: 1.2rem;
-            border-left: 4px solid var(--accent);
-            padding-left: 10px;
-            margin: 1.5rem 0 1rem 0;
-            color: var(--accent);
-        }
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 1.2rem;
-            margin-bottom: 2rem;
-        }
-        .card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            overflow: hidden;
-            padding: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            cursor: pointer;
-            transition: transform 0.2s, border-color 0.2s;
-        }
-        .card:hover {
-            transform: translateY(-4px);
-            border-color: var(--accent);
-        }
-        .card img {
-            width: 100%;
-            height: 250px;
-            object-fit: cover;
-            border-radius: 4px;
-        }
-        .card h3 {
-            font-size: 1rem;
-            margin: 8px 0 4px 0;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        .meta-info {
-            font-size: 0.75rem;
-            color: var(--muted);
-            margin-bottom: 6px;
-            display: flex;
-            justify-content: space-between;
-        }
-        .card-actions {
-            display: flex;
-            gap: 6px;
-            margin-top: 6px;
-        }
-        .delete-btn {
-            background: var(--danger-color);
-            color: white;
-            border: none;
-            padding: 4px 8px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 0.8rem;
-            flex: 1;
-        }
-        .edit-btn {
-            background: var(--success-color);
-            color: white;
-            border: none;
-            padding: 4px 8px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 0.8rem;
-            flex: 1;
-        }
-        .detail-view {
-            display: none;
-        }
-        .detail-view.active {
-            display: block;
-        }
-        .back-btn {
-            background: var(--surface2);
-            color: var(--accent);
-            border: 1px solid var(--border);
-            padding: 8px 16px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: bold;
-            margin-bottom: 1.5rem;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .back-btn:hover {
-            background: var(--accent);
-            color: #061321;
-        }
+        *{box-sizing:border-box}html{scroll-behavior:smooth}
+        body{margin:0;background:var(--bg);color:var(--text);font:16px/1.65 system-ui,-apple-system,'Segoe UI',Arial,sans-serif;min-height:100vh;padding-bottom:70px}
+        a{color:inherit;text-decoration:none}button,input{font:inherit}
         
-        .post-top-info {
-            display: flex;
-            gap: 1.5rem;
-            background: var(--surface);
-            padding: 1.5rem;
-            border-radius: 8px;
-            margin-bottom: 1.5rem;
-            align-items: center;
-            flex-wrap: wrap;
-            border: 1px solid var(--border);
-        }
-        .post-top-info img {
-            width: 140px;
-            height: 190px;
-            object-fit: cover;
-            border-radius: 6px;
-        }
-        .post-top-text h2 {
-            margin: 0 0 10px 0;
-            color: var(--accent);
-            font-size: 1.6rem;
-        }
-        .post-top-text p {
-            margin: 5px 0;
-            color: var(--muted);
-            font-size: 0.95rem;
-        }
+        header{position:sticky;top:0;z-index:30;background:rgba(8,12,22,.96);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:10px max(16px,calc((100% - 1240px)/2));display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+        .logo{font-size:24px;font-weight:900;letter-spacing:-.7px;white-space:nowrap}.logo span{color:var(--accent)}
+        .search{flex:1;min-width:180px;display:flex;align-items:center;background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+        .search input{width:100%;background:transparent;border:0;color:var(--text);padding:11px 13px;outline:none}
+        
+        button,.btn{border:0;border-radius:10px;background:var(--accent);color:#061321;font-weight:800;padding:10px 14px;cursor:pointer;transition:transform .18s,background .18s}
+        button:hover,.btn:hover{transform:translateY(-1px);background:#78c8ff}
+        
+        .wrap{max-width:1240px;margin:auto;padding:20px}
+        .navlinks{display:flex;align-items:center;gap:18px;width:100%;order:3;padding:0 0 3px;font-size:13px;font-weight:750;color:#d7e2f5}
+        .navlinks a:hover{color:var(--accent)}
+        
+        .az-row{display:flex;align-items:center;gap:7px;overflow-x:auto;padding:10px 0 3px;white-space:nowrap}
+        .az-row span{font-size:11px;color:var(--muted);font-weight:800}
+        .az-row button{padding:4px 7px;background:var(--surface);color:#d7e2f5;border:1px solid var(--border);font-size:11px;border-radius:6px}
+        .az-row button.active{background:var(--accent);color:#061321}
 
-        .admob-banner {
-            width: 100%;
-            max-width: 1100px;
-            height: 60px;
-            background: #111827;
-            border: 1px dashed var(--border);
-            margin: 15px auto;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--muted);
-            font-size: 0.85rem;
-            border-radius: 6px;
-            text-align: center;
-        }
+        .hero{position:relative;isolation:isolate;margin:5px 0 28px;min-height:270px;border:1px solid var(--border);border-radius:24px;overflow:hidden;background:linear-gradient(115deg,#1a2a49,#15162e 70%,#302355);padding:42px 38px}
+        .hero:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,#10172a 4%,rgba(16,23,42,.9) 45%,rgba(16,23,42,.25));z-index:-1}
+        .eyebrow{color:#8cd0ff;text-transform:uppercase;letter-spacing:2px;font-size:.76rem;font-weight:900}
+        .hero h1{font-size:3.5rem;line-height:1.1;margin:13px 0}
+        .hero p{color:#d0d8e8;max-width:620px;margin:0;line-height:1.6}
 
-        /* Integrated Sticky Player Styles from index-1 */
-        .player-scroller {
-            position: sticky;
-            top: 76px;
-            z-index: 25;
-            isolation: isolate;
-            width: 100%;
-            max-width: 1100px;
-            margin: 0 auto;
-            overflow: hidden;
-            border-radius: 12px;
-            background: #000;
-            box-shadow: 0 8px 28px #0008;
-        }
-        .player-fixed {
-            width: 100%;
-            background: #000;
-        }
-        .player-titlebar {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 10px;
-            padding: 11px 12px;
-            background: var(--surface);
-            color: var(--text);
-            font-size: 13px;
-            border-bottom: 1px solid var(--border);
-        }
-        .drive-frame {
-            display: block;
-            width: 100%;
-            height: 619px;
-            border: 0;
-            background: #000;
-        }
-        .player-note {
-            font-size: 12px;
-            color: var(--muted);
-            margin: 10px auto;
-            max-width: 1100px;
-            line-height: 1.5;
-        }
+        .ad{min-height:56px;border:1px dashed #43526b;border-radius:12px;color:#8290aa;display:flex;align-items:center;justify-content:center;text-align:center;font-size:12px;letter-spacing:1px;background:#0c1220;margin:24px 0}
+        .section-title{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:30px 0 16px}
+        .section-title h2{font-size:1.4rem;line-height:1.3;margin:0}
+        .section-title small{color:var(--muted)}
 
-        .episode-btn {
-            display: block;
-            width: 100%;
-            max-width: 1100px;
-            margin: 10px auto;
-            background: var(--surface);
-            color: var(--accent);
-            padding: 12px 16px;
-            border-radius: 6px;
-            text-align: left;
-            border: 1px solid var(--border);
-            font-weight: bold;
-            cursor: pointer;
-            transition: background 0.2s, color 0.2s;
-            box-sizing: border-box;
-        }
-        .episode-btn:hover, .episode-btn.active-ep {
-            background: var(--accent);
-            color: #061321;
-        }
-        .bottom-nav {
-            position: fixed;
-            bottom: 0; left: 0; width: 100%;
-            background: rgba(8,12,22,.97);
-            border-top: 1px solid var(--border);
-            display: flex;
-            justify-content: space-around;
-            padding: 10px 0;
-            z-index: 1000;
-            overflow-x: auto;
-        }
-        .nav-item {
-            background: none; border: none;
-            color: var(--muted); cursor: pointer;
-            display: flex; flex-direction: column;
-            align-items: center; font-size: 0.75rem; font-weight: bold;
-            white-space: nowrap;
-        }
-        .nav-item.active, .nav-item:hover { color: var(--accent); }
-        .section { display: none; }
-        .section.active { display: block; }
-        .search-box input {
-            width: 100%; padding: 12px;
-            background: var(--surface); border: 1px solid var(--border);
-            color: white; border-radius: 6px; font-size: 1rem;
-        }
-        .form-group { margin-bottom: 1rem; }
-        .form-group label { display: block; margin-bottom: 5px; color: var(--muted); font-size: 0.85rem; font-weight: bold; }
-        .form-group input, .form-group select, .form-group textarea {
-            width: 100%; padding: 10px;
-            background: var(--surface); border: 1px solid var(--border);
-            color: white; border-radius: 5px; box-sizing: border-box;
-        }
+        .grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:20px}
+        .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;cursor:pointer;transition:transform .2s,border-color .2s;padding:10px;display:flex;flex-direction:column;justify-content:space-between}
+        .card:hover{transform:translateY(-4px);border-color:var(--accent)}
+        .poster{width:100%;aspect-ratio:2/3;object-fit:cover;display:block;background:linear-gradient(145deg,#1d3b58,#382b65);border-radius:12px}
+        .card-body{padding:13px}
+        .card h3{font-size:15px;line-height:1.4;margin:8px 0 8px}
+        .meta{color:var(--muted);font-size:12px;display:flex;justify-content:space-between}
+
+        .card-actions{display:flex;gap:6px;margin-top:6px}
+        .delete-btn{background:var(--danger-color);color:white;border:none;padding:4px 8px;border-radius:4px;cursor:pointer;font-size:0.8rem;flex:1}
+        .edit-btn{background:var(--success-color);color:white;border:none;padding:4px 8px;border-radius:4px;cursor:pointer;font-size:0.8rem;flex:1}
+
+        /* Detail View & Exact Desktop Player Styles from index-1 */
+        #details {display:none;background:var(--surface);border:1px solid var(--border);border-radius:18px}
+        #details.active {display:block}
+        
+        .detail-head{display:flex;gap:20px;padding:20px;border-radius:18px 18px 0 0}
+        .detail-poster{width:145px;height:205px;object-fit:cover;border-radius:12px;border:1px solid var(--border)}
+        .detail-copy h2{margin:3px 0 9px;font-size:30px;line-height:1.2;color:var(--accent)}
+        .detail-copy p{color:#c0cbde;line-height:1.55;font-size:14px}
+        
+        .player-area{padding:0 18px 20px}
+        .player-scroller{width:100%;overflow:hidden;border-radius:12px;background:#000;position:sticky;top:76px;z-index:15;box-shadow:0 8px 28px #0008}
+        .player-fixed{width:1100px;background:#000;transform-origin:top left}
+        .player-titlebar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 12px;background:#121a2b;width:1100px;color:#e5edfc;font-size:13px;border-bottom:1px solid var(--border)}
+        .drive-frame{display:block;width:1100px;height:619px;border:0;background:#000}
+        .player-note{font-size:12px;color:#9eabc4;margin:10px 0 14px;line-height:1.5}
+        
+        .episode-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(145px,1fr));gap:12px}
+        .episode{background:#eaf5ff;color:#102033;border-radius:10px;border:1px solid #b9dcf7;padding:12px;text-align:left;cursor:pointer}
+        .episode strong{display:block;font-size:12px}
+        .episode span{display:block;color:#36516c;font-size:10px;margin-top:5px}
+        .episode:hover, .episode.active{outline:2px solid var(--accent);background:#c9eaff}
+
+        .admin-shell{max-width:900px;margin:24px auto;background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:20px}
+        .admin-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+        .admin-grid label{display:block;font-size:12px;color:var(--muted);font-weight:800}
+        .admin-grid input,.admin-grid textarea,.admin-grid select{width:100%;margin-top:5px;background:#0b1220;border:1px solid #34415b;border-radius:9px;padding:10px;color:#fff}
+        .admin-grid textarea{min-height:85px;resize:vertical}
+        .admin-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+        
+        .bottom-nav{position:fixed;bottom:0;left:0;width:100%;background:rgba(8,12,22,.97);border-top:1px solid var(--border);display:flex;justify-content:space-around;padding:10px 0;z-index:1000}
+        .nav-item{background:none;border:none;color:var(--muted);cursor:pointer;display:flex;flex-direction:column;align-items:center;font-size:0.75rem;font-weight:bold}
+        .nav-item.active,.nav-item:hover{color:var(--accent)}
+        .section{display:none}.section.active{display:block}
     </style>
 </head>
 <body>
+<header>
+  <div class="logo">TamilCartoons<span>.</span></div>
+  <div class="search"><input id="search-input" placeholder="Search anime..." oninput="handleSearch()"></div>
+  <button class="secondary" onclick="showSection('home')">Home</button>
+  <button class="secondary" id="auth-nav-btn" onclick="toggleAuth()">Login</button>
+  <nav class="navlinks"><a href="#" onclick="showSection('home');return false">Home</a><a href="#" onclick="filterNav('Anime');return false">Anime</a><a href="#" onclick="filterNav('Cartoon');return false">Cartoons</a></nav>
+</header>
 
-    <header>
-        <h1>AnimeSalt</h1>
-        <div id="user-status">Not Logged In</div>
-    </header>
+<main class="wrap">
+  <!-- MAIN APP CONTENT -->
+  <div id="main-app-content">
+    <section id="home" class="section active">
+      <div class="hero"><div class="eyebrow">Anime • Cartoons • Episodes</div><h1>Your anime world, all in one place.</h1><p>Browse anime and cartoons, select seasons, and play episodes with their saved video links.</p></div>
+      <div class="az-row" id="az-buttons"><span>A–Z</span><button class="active" onclick="filterByAZ('', this)">All</button><button onclick="filterByAZ('A', this)">A</button><button onclick="filterByAZ('B', this)">B</button><button onclick="filterByAZ('C', this)">C</button><button onclick="filterByAZ('D', this)">D</button><button onclick="filterByAZ('E', this)">E</button><button onclick="filterByAZ('F', this)">F</button><button onclick="filterByAZ('G', this)">G</button><button onclick="filterByAZ('H', this)">H</button><button onclick="filterByAZ('I', this)">I</button><button onclick="filterByAZ('J', this)">J</button><button onclick="filterByAZ('K', this)">K</button><button onclick="filterByAZ('L', this)">L</button><button onclick="filterByAZ('M', this)">M</button><button onclick="filterByAZ('N', this)">N</button><button onclick="filterByAZ('O', this)">O</button><button onclick="filterByAZ('P', this)">P</button><button onclick="filterByAZ('Q', this)">Q</button><button onclick="filterByAZ('R', this)">R</button><button onclick="filterByAZ('S', this)">S</button><button onclick="filterByAZ('T', this)">T</button><button onclick="filterByAZ('U', this)">U</button><button onclick="filterByAZ('V', this)">V</button><button onclick="filterByAZ('W', this)">W</button><button onclick="filterByAZ('X', this)">X</button><button onclick="filterByAZ('Y', this)">Y</button><button onclick="filterByAZ('Z', this)">Z</button></div>
+      
+      <div class="ad">AD SPACE — TOP BANNER</div>
+      <div class="section-title"><h2>🔥 Trending Anime & Cartoons</h2><small id="count">0 titles</small></div>
+      <div id="series-grid" class="grid"></div>
+      <div class="ad">AD SPACE — BOTTOM BANNER</div>
+    </section>
 
-    <div class="container">
-        <!-- DETAIL PAGE VIEW -->
-        <div id="detail-page" class="detail-view">
-            <button class="back-btn" onclick="goBack()">← Back to Home</button>
-            
-            <div class="post-top-info">
-                <img id="detail-img" src="" alt="">
-                <div class="post-top-text">
-                    <h2 id="detail-title"></h2>
-                    <p id="detail-meta"></p>
-                    <p id="detail-views" style="color: var(--accent); font-weight: bold;"></p>
-                </div>
-            </div>
+    <section id="search-section" class="section">
+      <div class="section-title"><h2>Search Results</h2></div>
+      <div id="search-grid" class="grid"></div>
+    </section>
 
-            <div class="admob-banner">
-                <span>[ AdMob Banner Ad - Top ]</span>
-            </div>
-
-            <!-- INTEGRATED STICKY PLAYER FROM INDEX-1 -->
-            <div class="player-scroller">
-                <div class="player-fixed">
-                    <div class="player-titlebar">
-                        <strong id="playerHeading">TamilCartoons Player</strong>
-                        <span id="nowPlayingText">Select an episode</span>
-                    </div>
-                    <iframe id="main-video-player" class="drive-frame" src=""
-                            allow="autoplay; fullscreen; picture-in-picture"
-                            allowfullscreen
-                            referrerpolicy="strict-origin-when-cross-origin"></iframe>
-                </div>
-            </div>
-            <div class="player-note">Desktop-style Google Drive/Mega player scales to fit and stays visible while scrolling the episodes list.</div>
-
-            <div class="admob-banner">
-                <span>[ AdMob Banner Ad - Bottom ]</span>
-            </div>
-
-            <h2 class="section-title" style="max-width: 1100px; margin: 1.5rem auto 1rem auto;">Episodes List</h2>
-            <div id="detail-links-container" style="max-width: 1100px; margin: 0 auto;"></div>
+    <section id="upload" class="section">
+      <div class="admin-shell">
+        <h2 id="form-heading">Upload Post</h2>
+        <input type="hidden" id="edit-post-id" value="">
+        <div class="admin-grid">
+          <label>Title *<input id="post-title" placeholder="Naruto Shippuden"></label>
+          <label>Category
+            <select id="post-category"><option value="Series">Series</option><option value="Movies">Movies</option></select>
+          </label>
+          <label>Genre / Type
+            <select id="post-genre"><option value="Anime">Anime</option><option value="Cartoon">Cartoon</option></select>
+          </label>
+          <label>Image URL *<input id="post-image" placeholder="https://..."></label>
+          <label style="grid-column:1/-1">Video Links (Google Drive / MEGA separated by commas or lines)
+            <textarea id="post-links" placeholder="https://drive.google.com/..."></textarea>
+          </label>
         </div>
-
-        <!-- MAIN APP SECTIONS -->
-        <div id="main-app-content">
-            <div id="home" class="section active">
-                <div style="font-size: 0.85rem; color: var(--muted); margin-bottom: 5px;">NAVIGATE A TO Z</div>
-                <div class="az-bar" id="az-buttons">
-                    <button class="az-btn active" onclick="filterByAZ('', this)">#</button>
-                    <button class="az-btn" onclick="filterByAZ('A', this)">A</button>
-                    <button class="az-btn" onclick="filterByAZ('B', this)">B</button>
-                    <button class="az-btn" onclick="filterByAZ('C', this)">C</button>
-                    <button class="az-btn" onclick="filterByAZ('D', this)">D</button>
-                    <button class="az-btn" onclick="filterByAZ('E', this)">E</button>
-                    <button class="az-btn" onclick="filterByAZ('F', this)">F</button>
-                    <button class="az-btn" onclick="filterByAZ('G', this)">G</button>
-                    <button class="az-btn" onclick="filterByAZ('H', this)">H</button>
-                    <button class="az-btn" onclick="filterByAZ('I', this)">I</button>
-                    <button class="az-btn" onclick="filterByAZ('J', this)">J</button>
-                    <button class="az-btn" onclick="filterByAZ('K', this)">K</button>
-                    <button class="az-btn" onclick="filterByAZ('L', this)">L</button>
-                    <button class="az-btn" onclick="filterByAZ('M', this)">M</button>
-                    <button class="az-btn" onclick="filterByAZ('N', this)">N</button>
-                    <button class="az-btn" onclick="filterByAZ('O', this)">O</button>
-                    <button class="az-btn" onclick="filterByAZ('P', this)">P</button>
-                    <button class="az-btn" onclick="filterByAZ('Q', this)">Q</button>
-                    <button class="az-btn" onclick="filterByAZ('R', this)">R</button>
-                    <button class="az-btn" onclick="filterByAZ('S', this)">S</button>
-                    <button class="az-btn" onclick="filterByAZ('T', this)">T</button>
-                    <button class="az-btn" onclick="filterByAZ('U', this)">U</button>
-                    <button class="az-btn" onclick="filterByAZ('V', this)">V</button>
-                    <button class="az-btn" onclick="filterByAZ('W', this)">W</button>
-                    <button class="az-btn" onclick="filterByAZ('X', this)">X</button>
-                    <button class="az-btn" onclick="filterByAZ('Y', this)">Y</button>
-                    <button class="az-btn" onclick="filterByAZ('Z', this)">Z</button>
-                </div>
-
-                <h2 class="section-title">Popular Series</h2>
-                <div id="series-grid" class="grid"></div>
-
-                <h2 class="section-title">Popular Movies</h2>
-                <div id="movies-grid" class="grid"></div>
-            </div>
-
-            <div id="search" class="section">
-                <h2 class="section-title">Search Anime</h2>
-                <div class="search-box" style="margin-bottom: 1.5rem;">
-                    <input type="text" id="search-input" placeholder="Search anime or cartoons..." oninput="handleSearch()">
-                </div>
-                <div id="search-grid" class="grid"></div>
-            </div>
-
-            <div id="upload" class="section">
-                <h2 class="section-title" id="form-heading">Upload Post</h2>
-                <div id="upload-form-container" style="display:none; max-width: 800px;">
-                    <input type="hidden" id="edit-post-id" value="">
-                    
-                    <div class="form-group">
-                        <label>Title</label>
-                        <input type="text" id="post-title" placeholder="E.g. Shinchan Season 1">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>Media Type</label>
-                        <select id="post-category">
-                            <option value="Series">Series</option>
-                            <option value="Movies">Movies</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Genre / Type</label>
-                        <select id="post-genre">
-                            <option value="Anime">Anime</option>
-                            <option value="Cartoon">Cartoon</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Image URL</label>
-                        <input type="text" id="post-image" placeholder="Image link">
-                    </div>
-
-                    <div class="form-group">
-                        <label>Video Links (Google Drive or MEGA links separated by commas ',' or line-by-line)</label>
-                        <textarea id="post-links" rows="6" placeholder="https://drive.google.com/..., https://mega.nz/..."></textarea>
-                    </div>
-
-                    <div style="display: flex; gap: 10px;">
-                        <button id="submit-btn" onclick="saveUserPost()" style="background:var(--accent); color:#061321; border:none; padding:10px 20px; border-radius:5px; font-weight:bold; cursor:pointer; flex: 1;">Publish</button>
-                        <button id="cancel-edit-btn" onclick="resetForm()" style="background:var(--danger-color); color:white; border:none; padding:10px 20px; border-radius:5px; font-weight:bold; cursor:pointer; display:none;">Cancel</button>
-                    </div>
-                </div>
-                <p id="upload-warning" style="color: var(--danger-color); font-weight: bold; margin-top: 1rem;">Please login with your Google account to upload posts.</p>
-            </div>
-
-            <div id="series" class="section">
-                <h2 class="section-title">All Series</h2>
-                <div id="series-only-grid" class="grid"></div>
-            </div>
-
-            <div id="movies" class="section">
-                <h2 class="section-title">All Movies</h2>
-                <div id="movies-only-grid" class="grid"></div>
-            </div>
-
-            <div id="anime" class="section">
-                <h2 class="section-title">All Anime</h2>
-                <div id="anime-only-grid" class="grid"></div>
-            </div>
-
-            <div id="cartoon" class="section">
-                <h2 class="section-title">All Cartoons</h2>
-                <div id="cartoon-only-grid" class="grid"></div>
-            </div>
+        <div class="admin-actions">
+          <button id="submit-btn" onclick="saveUserPost()">Publish</button>
+          <button class="secondary" id="cancel-edit-btn" onclick="resetForm()" style="display:none;">Cancel</button>
         </div>
+        <p id="upload-warning" style="color:var(--danger-color);margin-top:10px;font-weight:bold;">Please login with Google to upload posts.</p>
+      </div>
+    </section>
+  </div>
+
+  <!-- DETAILS PAGE VIEW WITH INDEX-1 DESKTOP PLAYER -->
+  <section id="details">
+    <div class="detail-head" id="detailHead">
+      <img id="detail-img" class="detail-poster" alt="Poster">
+      <div class="detail-copy">
+        <div class="eyebrow">SERIES DETAILS</div>
+        <h2 id="detail-title"></h2>
+        <div id="detail-meta" class="meta"></div>
+        <p id="detail-views" style="color:var(--accent);font-weight:bold;margin-top:10px;"></p>
+      </div>
     </div>
+    <div class="player-area">
+      <div class="ad">AD SPACE — PLAYER TOP</div>
+      <div class="section-title"><h2>▶ Video Player</h2><small id="nowPlaying">Select an episode</small></div>
+      
+      <div class="player-scroller" id="playerScroller">
+        <div class="player-fixed" id="playerFixed">
+          <div class="player-titlebar">
+            <strong id="playerHeading">Google Drive Player</strong>
+            <span>Drive Player</span>
+          </div>
+          <iframe id="driveFrame" class="drive-frame" src="about:blank" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>
+        </div>
+      </div>
+      <div class="player-note">Desktop-style Google Drive player scales to fit and stays visible while scrolling episodes.</div>
 
-    <nav class="bottom-nav">
-        <button class="nav-item active" onclick="showSection('home', this)">🏠 HOME</button>
-        <button class="nav-item" onclick="showSection('search', this)">🔍 SEARCH</button>
-        <button class="nav-item" onclick="showSection('upload', this)">➕ UPLOAD</button>
-        <button class="nav-item" onclick="showSection('series', this)">📺 SERIES</button>
-        <button class="nav-item" onclick="showSection('movies', this)">🎬 MOVIES</button>
-        <button class="nav-item" onclick="showSection('anime', this)">⚡ ANIME</button>
-        <button class="nav-item" onclick="showSection('cartoon', this)">🧸 CARTOON</button>
-        <button class="nav-item" id="auth-nav-btn" onclick="toggleAuth()">👤 LOGIN</button>
-    </nav>
+      <div class="ad">AD SPACE — PLAYER BOTTOM</div>
+      <div class="section-title"><h2>Episodes</h2><small id="episodeCount">0 episodes</small></div>
+      <div id="detail-links-container" class="episode-grid"></div>
+      <div style="margin-top:20px;"><button class="secondary" onclick="goBack()">← Back to Anime List</button></div>
+    </div>
+  </section>
+</main>
 
-    <!-- Firebase SDKs -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, updateDoc, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-        import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+<nav class="bottom-nav">
+  <button class="nav-item active" onclick="showSection('home', this)">🏠 HOME</button>
+  <button class="nav-item" onclick="showSection('search-section', this)">🔍 SEARCH</button>
+  <button class="nav-item" onclick="showSection('upload', this)">➕ UPLOAD</button>
+  <button class="nav-item" id="auth-nav-btn-bottom" onclick="toggleAuth()">👤 LOGIN</button>
+</nav>
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyBIzColODaVvjRm_XbRKHJLBAKSfeZdOkc", 
-            authDomain: "login-6aeba.firebaseapp.com",
-            projectId: "login-6aeba",
-            storageBucket: "login-6aeba.appspot.com",
-            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-            appId: "YOUR_APP_ID"
-        };
+<!-- Firebase SDKs & App Logic -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getFirestore, collection, addDoc, updateDoc, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        const auth = getAuth(app);
-        const provider = new GoogleAuthProvider();
+    const firebaseConfig = {
+        apiKey: "AIzaSyBIzColODaVvjRm_XbRKHJLBAKSfeZdOkc", 
+        authDomain: "login-6aeba.firebaseapp.com",
+        projectId: "login-6aeba",
+        storageBucket: "login-6aeba.appspot.com",
+        messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+        appId: "YOUR_APP_ID"
+    };
 
-        const ADMIN_EMAIL = "arulmani0000@gmail.com"; 
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+    const provider = new GoogleAuthProvider();
+    const ADMIN_EMAIL = "arulmani0000@gmail.com"; 
 
-        let allPosts = [];
-        let currentAZ = "";
-        let isAdmin = false;
-        let currentUser = null;
+    let allPosts = [];
+    let currentAZ = "";
+    let isAdmin = false;
+    let currentUser = null;
 
-        onAuthStateChanged(auth, (user) => {
-            currentUser = user;
-            if (user) {
-                isAdmin = (user.email === ADMIN_EMAIL);
-            } else {
-                isAdmin = false;
+    onAuthStateChanged(auth, (user) => {
+        currentUser = user;
+        isAdmin = user ? (user.email === ADMIN_EMAIL) : false;
+        updateUI();
+    });
+
+    window.toggleAuth = async function() {
+        if (currentUser) {
+            if (confirm("Do you want to logout?")) {
+                try { await signOut(auth); alert("Logged out!"); } catch (e) { console.error(e); }
             }
-            updateUI();
-        });
-
-        window.toggleAuth = async function() {
-            if (currentUser) {
-                if (confirm("Do you want to logout?")) {
-                    try {
-                        await signOut(auth);
-                        alert("Logged out successfully!");
-                    } catch (error) {
-                        console.error("Logout error:", error);
-                    }
-                }
-            } else {
-                try {
-                    await signInWithPopup(auth, provider);
-                    alert("Login Successful!");
-                } catch (error) {
-                    console.error("Google Login Error:", error);
-                    alert("Google Login Failed: " + error.message);
-                }
-            }
+        } else {
+            try { await signInWithPopup(auth, provider); alert("Login Successful!"); } catch (e) { alert("Login Failed: " + e.message); }
         }
+    }
 
-        function updateUI() {
-            const authNavBtn = document.getElementById('auth-nav-btn');
-            const uploadForm = document.getElementById('upload-form-container');
-            const uploadWarning = document.getElementById('upload-warning');
-            const userStatus = document.getElementById('user-status');
+    function updateUI() {
+        const authBtn = document.getElementById('auth-nav-btn');
+        const authBottom = document.getElementById('auth-nav-btn-bottom');
+        const uploadForm = document.getElementById('upload-form-container') || document.querySelector('.admin-shell');
+        const uploadWarning = document.getElementById('upload-warning');
 
-            if (currentUser) {
-                authNavBtn.innerText = "🚪 LOGOUT";
-                userStatus.innerText = isAdmin ? `Admin: ${currentUser.email}` : `User: ${currentUser.email}`;
-                uploadForm.style.display = "block";
-                uploadWarning.style.display = "none";
-            } else {
-                authNavBtn.innerText = "👤 LOGIN";
-                userStatus.innerText = "Not Logged In";
-                uploadForm.style.display = "none";
-                uploadWarning.style.display = "block";
-                uploadWarning.innerText = "Please login with Google to upload posts.";
-            }
-            renderAllViews(allPosts);
+        if (currentUser) {
+            if(authBtn) authBtn.innerText = "Logout";
+            if(authBottom) authBottom.innerText = "🚪 LOGOUT";
+            if(uploadWarning) uploadWarning.style.display = "none";
+        } else {
+            if(authBtn) authBtn.innerText = "Login";
+            if(authBottom) authBottom.innerText = "👤 LOGIN";
+            if(uploadWarning) uploadWarning.style.display = "block";
         }
-
-        window.saveUserPost = async function() {
-            if (!currentUser) {
-                alert("Please login first to publish posts!");
-                return;
-            }
-
-            const postId = document.getElementById('edit-post-id').value;
-            const title = document.getElementById('post-title').value.trim();
-            const category = document.getElementById('post-category').value;
-            const genre = document.getElementById('post-genre').value;
-            const image = document.getElementById('post-image').value.trim();
-            const newLinksInput = document.getElementById('post-links').value.trim();
-
-            if(!title || !image) {
-                alert("Please fill title and image URL!");
-                return;
-            }
-
-            try {
-                if (postId) {
-                    const postToEdit = allPosts.find(p => p.id === postId);
-                    if (!isAdmin && (!postToEdit || postToEdit.userEmail !== currentUser.email)) {
-                        alert("Unauthorized! You can only edit posts created by you.");
-                        return;
-                    }
-
-                    let updatedLinks = postToEdit.links || "";
-                    if (newLinksInput) {
-                        if (updatedLinks && !updatedLinks.trim().endsWith(",")) {
-                            updatedLinks += ", ";
-                        }
-                        updatedLinks += newLinksInput;
-                    }
-
-                    await updateDoc(doc(db, "posts", postId), {
-                        title, category, genre, image, links: updatedLinks
-                    });
-                    alert("Post Updated & New Episodes Added Successfully!");
-                } else {
-                    await addDoc(collection(db, "posts"), {
-                        title, category, genre, image, links: newLinksInput,
-                        views: 0,
-                        userEmail: currentUser.email,
-                        createdAt: new Date()
-                    });
-                    alert("Post Published Successfully!");
-                }
-                
-                resetForm();
-                fetchPosts();
-                showSection('home', document.querySelector('.nav-item'));
-            } catch (e) {
-                console.error("Error saving document: ", e);
-                alert("Error saving post.");
-            }
-        }
-
-        window.editPost = function(id) {
-            const post = allPosts.find(p => p.id === id);
-            if (!post) return;
-
-            if (!isAdmin && post.userEmail !== currentUser?.email) {
-                alert("You are not allowed to edit this post!");
-                return;
-            }
-
-            document.getElementById('edit-post-id').value = post.id;
-            document.getElementById('post-title').value = post.title;
-            document.getElementById('post-category').value = post.category || 'Series';
-            document.getElementById('post-genre').value = post.genre || 'Anime';
-            document.getElementById('post-image').value = post.image;
-            document.getElementById('post-links').value = "";
-
-            document.getElementById('form-heading').innerText = "Edit / Add Episodes";
-            document.getElementById('submit-btn').innerText = "Update & Add Episodes";
-            document.getElementById('cancel-edit-btn').style.display = "block";
-
-            showSection('upload', document.querySelectorAll('.bottom-nav .nav-item')[2]);
-        }
-
-        window.resetForm = function() {
-            document.getElementById('edit-post-id').value = '';
-            document.getElementById('post-title').value = '';
-            document.getElementById('post-image').value = '';
-            document.getElementById('post-links').value = '';
-            document.getElementById('form-heading').innerText = "Upload Post";
-            document.getElementById('submit-btn').innerText = "Publish";
-            document.getElementById('cancel-edit-btn').style.display = "none";
-        }
-
-        async function fetchPosts() {
-            allPosts = [];
-            try {
-                const querySnapshot = await getDocs(collection(db, "posts"));
-                querySnapshot.forEach((docSnap) => {
-                    allPosts.push({ id: docSnap.id, ...docSnap.data() });
-                });
-                renderAllViews(allPosts);
-            } catch (e) {
-                console.error("Error fetching posts: ", e);
-            }
-        }
-
-        function renderAllViews(posts) {
-            let filtered = posts;
-            if (currentAZ !== "") {
-                filtered = posts.filter(p => p.title.toUpperCase().startsWith(currentAZ.toUpperCase()));
-            }
-
-            renderGrid(filtered.filter(p => p.category === 'Series'), 'series-grid');
-            renderGrid(filtered.filter(p => p.category === 'Movies'), 'movies-grid');
-
-            renderGrid(posts.filter(p => p.category === 'Series'), 'series-only-grid');
-            renderGrid(posts.filter(p => p.category === 'Movies'), 'movies-only-grid');
-            renderGrid(posts.filter(p => p.genre === 'Anime'), 'anime-only-grid');
-            renderGrid(posts.filter(p => p.genre === 'Cartoon'), 'cartoon-only-grid');
-        }
-
-        function renderGrid(posts, elementId) {
-            const grid = document.getElementById(elementId);
-            if (!grid) return;
-            
-            if (posts.length === 0) {
-                grid.innerHTML = "<p style='color:var(--muted);'>No items available.</p>";
-                return;
-            }
-
-            let html = '';
-            posts.forEach(post => {
-                let canEdit = currentUser && (isAdmin || post.userEmail === currentUser.email);
-                let canDelete = currentUser && isAdmin;
-                let viewCount = post.views || 0;
-
-                html += `
-                    <div class="card" onclick="openDetailPage('${post.id}')">
-                        <div>
-                            <img src="${post.image}" alt="${post.title}">
-                            <h3>${post.title}</h3>
-                            <div class="meta-info">
-                                <span>${post.category}</span>
-                                <span>👁️ ${viewCount} Views</span>
-                            </div>
-                        </div>
-                        ${currentUser ? `
-                            <div class="card-actions" onclick="event.stopPropagation()">
-                                ${canEdit ? `<button class="edit-btn" onclick="editPost('${post.id}')">Edit</button>` : ''}
-                                ${canDelete ? `<button class="delete-btn" onclick="deletePost('${post.id}')">Delete</button>` : ''}
-                            </div>
-                        ` : ''}
-                    </div>
-                `;
-            });
-            grid.innerHTML = html;
-        }
-
-        window.convertToEmbedUrl = function(url) {
-            if (!url) return "";
-            let trimmed = url.trim();
-            
-            if (trimmed.includes("drive.google.com")) {
-                let fileId = "";
-                let fileIdMatch = trimmed.match(/\/d\/([a-zA-Z0-9_-]+)/);
-                if (fileIdMatch && fileIdMatch[1]) {
-                    fileId = fileIdMatch[1];
-                } else {
-                    let idMatch = trimmed.match(/[?&]id=([a-zA-Z0-9_-]+)/);
-                    if (idMatch && idMatch[1]) {
-                        fileId = idMatch[1];
-                    }
-                }
-                if (fileId) {
-                    return `https://drive.google.com/file/d/${fileId}/preview`;
-                }
-            }
-            
-            if (trimmed.includes("mega.nz") || trimmed.includes("mega.co.nz")) {
-                if (trimmed.includes("/embed/")) {
-                    return trimmed;
-                }
-                if (trimmed.includes("file/")) {
-                    return trimmed.replace("mega.nz/file/", "mega.nz/embed/").replace("mega.co.nz/file/", "mega.co.nz/embed/");
-                }
-                return trimmed.replace("mega.nz/", "mega.nz/embed/").replace("mega.co.nz/", "mega.co.nz/embed/");
-            }
-            
-            return trimmed;
-        }
-
-        window.openDetailPage = async function(id) {
-            const post = allPosts.find(p => p.id === id);
-            if (!post) return;
-
-            try {
-                let newViews = (post.views || 0) + 1;
-                post.views = newViews;
-                await updateDoc(doc(db, "posts", id), {
-                    views: newViews
-                });
-            } catch (err) {
-                console.error("Error updating views:", err);
-            }
-
-            document.getElementById('detail-title').innerText = post.title;
-            document.getElementById('detail-img').src = post.image;
-            document.getElementById('detail-meta').innerText = `Category: ${post.category} • Genre: ${post.genre}`;
-            document.getElementById('detail-views').innerText = `👁️ Total Views: ${post.views || 0}`;
-
-            const container = document.getElementById('detail-links-container');
-            const videoPlayer = document.getElementById('main-video-player');
-            const nowPlayingText = document.getElementById('nowPlayingText');
-
-            if (!post.links || post.links.trim() === "") {
-                container.innerHTML = "<p style='color: var(--muted); text-align: center;'>No video links added yet.</p>";
-                videoPlayer.src = "";
-                nowPlayingText.innerText = "No video available";
-            } else {
-                let linkArray = post.links.split(/[\n,]+/);
-                let validLinks = linkArray.map(l => l.trim()).filter(l => l.length > 0);
-                
-                let linksHtml = '';
-                validLinks.forEach((link, index) => {
-                    let embedUrl = window.convertToEmbedUrl(link);
-                    linksHtml += `<button class="episode-btn" onclick="playEpisode('${embedUrl}', 'Episode ${index + 1}', this)">▶ Episode ${index + 1}</button>`;
-                });
-                container.innerHTML = linksHtml;
-
-                if (validLinks.length > 0) {
-                    let firstEmbedUrl = window.convertToEmbedUrl(validLinks[0]);
-                    videoPlayer.src = firstEmbedUrl;
-                    nowPlayingText.innerText = "Episode 1";
-                }
-            }
-
-            document.getElementById('main-app-content').style.display = 'none';
-            document.getElementById('detail-page').classList.add('active');
-            window.scrollTo(0, 0);
-        }
-
-        window.playEpisode = function(url, titleText, btnElement) {
-            const videoPlayer = document.getElementById('main-video-player');
-            videoPlayer.src = url;
-            document.getElementById('nowPlayingText').innerText = titleText;
-
-            document.querySelectorAll('.episode-btn').forEach(b => b.classList.remove('active-ep'));
-            if(btnElement) btnElement.classList.add('active-ep');
-        }
-
-        window.goBack = function() {
-            document.getElementById('detail-page').classList.remove('active');
-            document.getElementById('main-app-content').style.display = 'block';
-            const videoPlayer = document.getElementById('main-video-player');
-            videoPlayer.src = "";
-            fetchPosts();
-        }
-
-        window.deletePost = async function(id) {
-            if (!isAdmin) {
-                alert("Unauthorized! Only Admin can delete posts.");
-                return;
-            }
-
-            if(confirm("Are you sure you want to delete this post?")) {
-                try {
-                    await deleteDoc(doc(db, "posts", id));
-                    alert("Post Deleted Successfully!");
-                    fetchPosts();
-                } catch (e) {
-                    console.error("Error deleting document: ", e);
-                }
-            }
-        }
-
-        window.filterByAZ = function(letter, btnElement) {
-            currentAZ = letter;
-            document.querySelectorAll('.az-bar .az-btn').forEach(btn => btn.classList.remove('active'));
-            if(btnElement) {
-                btnElement.classList.add('active');
-            }
-            renderAllViews(allPosts);
-        }
-
-        window.handleSearch = function() {
-            const query = document.getElementById('search-input').value.toLowerCase();
-            let filtered = allPosts.filter(post => post.title.toLowerCase().includes(query));
-            renderGrid(filtered, 'search-grid');
-        }
-
-        window.showSection = function(sectionId, btnElement) {
-            document.getElementById('detail-page').classList.remove('active');
-            document.getElementById('main-app-content').style.display = 'block';
-
-            document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
-            document.getElementById(sectionId).classList.add('active');
-
-            if(btnElement && btnElement.classList.contains('nav-item')) {
-                document.querySelectorAll('.bottom-nav .nav-item').forEach(item => item.classList.remove('active'));
-                btnElement.classList.add('active');
-            }
-            if(sectionId === 'search') {
-                handleSearch();
-            }
-        }
-
         fetchPosts();
-    </script>
+    }
+
+    window.saveUserPost = async function() {
+        if (!currentUser) { alert("Please login first!"); return; }
+        const postId = document.getElementById('edit-post-id').value;
+        const title = document.getElementById('post-title').value.trim();
+        const category = document.getElementById('post-category').value;
+        const genre = document.getElementById('post-genre').value;
+        const image = document.getElementById('post-image').value.trim();
+        const links = document.getElementById('post-links').value.trim();
+
+        if(!title || !image) { alert("Fill title and image URL!"); return; }
+
+        try {
+            if (postId) {
+                await updateDoc(doc(db, "posts", postId), { title, category, genre, image, links });
+                alert("Updated successfully!");
+            } else {
+                await addDoc(collection(db, "posts"), { title, category, genre, image, links, views: 0, userEmail: currentUser.email, createdAt: new Date() });
+                alert("Published successfully!");
+            }
+            resetForm();
+            fetchPosts();
+            showSection('home');
+        } catch(e) { alert("Error saving post."); console.error(e); }
+    }
+
+    window.editPost = function(id) {
+        const post = allPosts.find(p => p.id === id);
+        if (!post) return;
+        document.getElementById('edit-post-id').value = post.id;
+        document.getElementById('post-title').value = post.title;
+        document.getElementById('post-category').value = post.category || 'Series';
+        document.getElementById('post-genre').value = post.genre || 'Anime';
+        document.getElementById('post-image').value = post.image;
+        document.getElementById('post-links').value = post.links || '';
+        document.getElementById('form-heading').innerText = "Edit Post";
+        document.getElementById('submit-btn').innerText = "Update Post";
+        document.getElementById('cancel-edit-btn').style.display = "block";
+        showSection('upload');
+    }
+
+    window.resetForm = function() {
+        document.getElementById('edit-post-id').value = '';
+        document.getElementById('post-title').value = '';
+        document.getElementById('post-image').value = '';
+        document.getElementById('post-links').value = '';
+        document.getElementById('form-heading').innerText = "Upload Post";
+        document.getElementById('submit-btn').innerText = "Publish";
+        document.getElementById('cancel-edit-btn').style.display = "none";
+    }
+
+    async function fetchPosts() {
+        allPosts = [];
+        try {
+            const querySnapshot = await getDocs(collection(db, "posts"));
+            querySnapshot.forEach((docSnap) => {
+                allPosts.push({ id: docSnap.id, ...docSnap.data() });
+            });
+            renderGrid(allPosts, 'series-grid');
+            document.getElementById('count').innerText = `${allPosts.length} titles`;
+        } catch (e) { console.error(e); }
+    }
+
+    function renderGrid(posts, elementId) {
+        const grid = document.getElementById(elementId);
+        if (!grid) return;
+        if (posts.length === 0) { grid.innerHTML = "<p style='color:var(--muted);'>No items available.</p>"; return; }
+
+        let html = '';
+        posts.forEach(post => {
+            let canEdit = currentUser && (isAdmin || post.userEmail === currentUser.email);
+            let canDelete = currentUser && isAdmin;
+            let views = post.views || 0;
+
+            html += `
+                <div class="card" onclick="openDetailPage('${post.id}')">
+                    <div>
+                        <img src="${post.image}" class="poster" alt="${post.title}">
+                        <h3>${post.title}</h3>
+                        <div class="meta"><span>${post.category}</span><span>👁️ ${views}</span></div>
+                    </div>
+                    ${currentUser ? `
+                        <div class="card-actions" onclick="event.stopPropagation()">
+                            ${canEdit ? `<button class="edit-btn" onclick="editPost('${post.id}')">Edit</button>` : ''}
+                            ${canDelete ? `<button class="delete-btn" onclick="deletePost('${post.id}')">Delete</button>` : ''}
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+        });
+        grid.innerHTML = html;
+    }
+
+    window.convertToEmbedUrl = function(url) {
+        if (!url) return "";
+        let trimmed = url.trim();
+        if (trimmed.includes("drive.google.com")) {
+            let match = trimmed.match(/\/d\/([a-zA-Z0-9_-]+)/) || trimmed.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+            if (match && match[1]) return `https://drive.google.com/file/d/${match[1]}/preview`;
+        }
+        if (trimmed.includes("mega.nz") || trimmed.includes("mega.co.nz")) {
+            if (trimmed.includes("/embed/")) return trimmed;
+            return trimmed.replace("mega.nz/file/", "mega.nz/embed/").replace("mega.nz/", "mega.nz/embed/");
+        }
+        return trimmed;
+    }
+
+    window.openDetailPage = async function(id) {
+        const post = allPosts.find(p => p.id === id);
+        if (!post) return;
+
+        try {
+            post.views = (post.views || 0) + 1;
+            await updateDoc(doc(db, "posts", id), { views: post.views });
+        } catch (e) { console.error(e); }
+
+        document.getElementById('detail-title').innerText = post.title;
+        document.getElementById('detail-img').src = post.image;
+        document.getElementById('detail-meta').innerHTML = `<span>Category: ${post.category}</span><span>Genre: ${post.genre}</span>`;
+        document.getElementById('detail-views').innerText = `👁️ Total Views: ${post.views}`;
+
+        const container = document.getElementById('detail-links-container');
+        const driveFrame = document.getElementById('driveFrame');
+        const nowPlaying = document.getElementById('nowPlaying');
+
+        if (!post.links || post.links.trim() === "") {
+            container.innerHTML = "<p style='color:var(--muted);'>No video links added yet.</p>";
+            driveFrame.src = "about:blank";
+            nowPlaying.innerText = "No video available";
+        } else {
+            let links = post.links.split(/[\n,]+/).map(l => l.trim()).filter(l => l.length > 0);
+            let linksHtml = '';
+            links.forEach((link, idx) => {
+                let embed = window.convertToEmbedUrl(link);
+                linksHtml += `<div class="episode" onclick="playEpisode('${embed}', 'Episode ${idx + 1}', this)"><strong>Episode ${idx + 1}</strong><span>Google Drive / Mega</span></div>`;
+            });
+            container.innerHTML = linksHtml;
+            document.getElementById('episodeCount').innerText = `${links.length} episodes`;
+
+            if (links.length > 0) {
+                driveFrame.src = window.convertToEmbedUrl(links[0]);
+                nowPlaying.innerText = "Episode 1";
+            }
+        }
+
+        document.getElementById('main-app-content').style.display = 'none';
+        document.getElementById('details').classList.add('active');
+        window.scrollTo(0, 0);
+    }
+
+    window.playEpisode = function(url, title, el) {
+        document.getElementById('driveFrame').src = url;
+        document.getElementById('nowPlaying').innerText = title;
+        document.querySelectorAll('.episode').forEach(e => e.classList.remove('active'));
+        if(el) el.classList.add('active');
+    }
+
+    window.goBack = function() {
+        document.getElementById('details').classList.remove('active');
+        document.getElementById('main-app-content').style.display = 'block';
+        document.getElementById('driveFrame').src = "about:blank";
+        fetchPosts();
+    }
+
+    window.deletePost = async function(id) {
+        if (!isAdmin) { alert("Only Admin can delete!"); return; }
+        if (confirm("Are you sure to delete?")) {
+            try { await deleteDoc(doc(db, "posts", id)); alert("Deleted!"); fetchPosts(); } catch(e) { console.error(e); }
+        }
+    }
+
+    window.filterByAZ = function(letter, btn) {
+        currentAZ = letter;
+        document.querySelectorAll('.az-row button').forEach(b => b.classList.remove('active'));
+        if(btn) btn.classList.add('active');
+        let filtered = currentAZ === "" ? allPosts : allPosts.filter(p => p.title.toUpperCase().startsWith(currentAZ.toUpperCase()));
+        renderGrid(filtered, 'series-grid');
+    }
+
+    window.filterNav = function(cat) {
+        let filtered = allPosts.filter(p => p.category === cat || p.genre === cat);
+        renderGrid(filtered, 'series-grid');
+        showSection('home');
+    }
+
+    window.handleSearch = function() {
+        const q = document.getElementById('search-input').value.toLowerCase();
+        let filtered = allPosts.filter(p => p.title.toLowerCase().includes(q));
+        renderGrid(filtered, 'search-grid');
+        showSection('search-section');
+    }
+
+    window.showSection = function(sectionId, btn) {
+        document.getElementById('details').classList.remove('active');
+        document.getElementById('main-app-content').style.display = 'block';
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        document.getElementById(sectionId).classList.add('active');
+    }
+
+    fetchPosts();
+</script>
 </body>
 </html>
